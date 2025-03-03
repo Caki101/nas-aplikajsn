@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -42,9 +43,34 @@ public class RestfulController {
         return tiketi;
     }
 
-    @GetMapping("/svi_tiketi_po_gradu_{grad}")
-    public List<Tiket> findSviTiketiPo(@PathVariable String grad) {
-        return tiketiRepo.findAllByGrad(grad);
+    /** Method for receiving all tickets filtered by given parameters. Received data will be an array
+     * with first 10 tickets ordered descending and other 10 tickets ordered by ascending order.
+     * <br>
+     * <br>
+     * Page parameter is offsetting which tickets should be selected, it helps give exactly the tickets
+     * that are supposed to be on the given page.
+     *
+     * @return Array list of Tiket objects.
+     * @param what By what is the method filtering (e.g., drzava, grad, sezona..)
+     * @param which Value to search by (e.g., what = 'drzava', which = 'Finska'..)
+     * @param orderBy Order received data by attribute (e.g., cena, polazak..)
+     * @param page A page number user is on.
+     */
+    @GetMapping("/stf_{what}_{which}_{orderBy}_{page}")
+    public List<Tiket> findSTF(@PathVariable String what,
+                               @PathVariable String which,
+                               @PathVariable String orderBy,
+                               @PathVariable Integer page) {
+        what = what.toLowerCase();
+        orderBy = orderBy.toLowerCase();
+
+        Class<Tiket> tiket_class =  Tiket.class;
+        List<String> fields = new ArrayList<>();
+        Arrays.stream(tiket_class.getDeclaredFields()).toList().forEach(field -> fields.add(field.getName().toLowerCase()));
+
+        if (fields.contains(what) && fields.contains(orderBy)) return tiketiRepo.findAllTiketiFilter(what, which, orderBy, page);
+
+        return new ArrayList<>();
     }
 
     @PostMapping("/saveOneT")
@@ -72,6 +98,7 @@ public class RestfulController {
             tkt.setBroj_tiketa(tiket.getBroj_tiketa());
             tkt.setTrajanje_odmora(tiket.getTrajanje_odmora());
             tkt.setCena(tiket.getCena());
+            tkt.setPolazak(tiket.getPolazak());
 
             tiketi_list.add(tkt);
         });
@@ -89,4 +116,6 @@ public class RestfulController {
     public ResponseEntity<?> saveAllS(@RequestBody List<Smestaj> smestaji) {
         return ResponseEntity.ok(smestajRepo.saveAll(smestaji));
     }
+
+
 }

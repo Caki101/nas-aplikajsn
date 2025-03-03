@@ -2,6 +2,8 @@ package com.backend.Backend.dataTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.sql.Timestamp;
+
 public class TiketDTO {
 
     private String sezona;
@@ -15,6 +17,7 @@ public class TiketDTO {
     private Integer broj_osoba;
     private Integer broj_tiketa;
     private String prevoz;
+    private Timestamp polazak;
 
     public String getSezona() {
         return sezona;
@@ -86,5 +89,13 @@ public class TiketDTO {
 
     public void setPrevoz(String prevoz) {
         this.prevoz = prevoz;
+    }
+
+    public Timestamp getPolazak() {
+        return polazak;
+    }
+
+    public void setPolazak(Timestamp polazak) {
+        this.polazak = polazak;
     }
 }
