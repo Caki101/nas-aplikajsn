@@ -2,6 +2,8 @@ package com.backend.Backend.dataTypes;
 
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
+
 @Entity
 @Table(name = "tiketi")
 public class Tiket {
@@ -22,6 +24,7 @@ public class Tiket {
     private Integer broj_osoba;
     private Integer broj_tiketa;
     private String prevoz;
+    private Timestamp polazak;
 
     @org.springframework.data.annotation.Version
     private Integer version = 0;
@@ -107,5 +110,13 @@ public class Tiket {
 
     public void setPrevoz(String prevoz) {
         this.prevoz = prevoz;
+    }
+
+    public Timestamp getPolazak() {
+        return polazak;
+    }
+
+    public void setPolazak(Timestamp polazak) {
+        this.polazak = polazak;
     }
 }
