@@ -29,7 +29,7 @@
     align-items: center;
   }
   
-  .fa-hand-middle-finger {
+  .fa-bus {
     margin-left: 0.5rem;
     font-size: 1.8rem;
   }
@@ -44,9 +44,9 @@
     justify-content: end;
     margin-right: 2rem;
   }
-  
+  #z80px
   .nav-item {
-    height: 80px;
+    height: 100%;
   }
   
   .nav-links {
@@ -60,7 +60,7 @@
   
   .nav-links:hover {
     border-bottom: 4px solid #fff;
-    transition: all 0.2s ease-out;
+    transition: all 0.1s ease-out;
   }
   
   .fa-bars {
