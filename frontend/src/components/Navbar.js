@@ -30,7 +30,7 @@ function Navbar() {
             <nav className="navbar">
                 <div className="navbar-container">
                     <Link to="/" className="navbar-logo">
-                        ubicu se <i className="fas fa-hand-middle-finger" />
+                        Traveling <i className="fas fa-bus" />
                     </Link>
                     <div className="menu-icon" onClick={handleClick}>
                         <i className={click ? 'fas fa-times' : 'fas fa-bars'}/>
@@ -49,6 +49,11 @@ function Navbar() {
                         <li className='nav-item'>
                             <Link to='/services' className='nav-links' onClick={closeMobileMenu}>
                                 Services
+                            </Link>
+                        </li>
+                        <li className='nav-item'>
+                            <Link to='/dataDisplay' className='nav-links' onClick={closeMobileMenu}>
+                                Data
                             </Link>
                         </li>
                         <li className='nav-item'>
