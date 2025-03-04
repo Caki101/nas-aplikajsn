@@ -8,19 +8,20 @@ public class Smestaj {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "smestaj_id_seq")
     @SequenceGenerator(name = "smestaj_id_seq", sequenceName = "smestaj_id_seq", allocationSize = 1, initialValue = 0)
-    private Integer id;
+    private Long id;
     String ime_smestaja;
+    String drzava;
     String grad;
     Integer ocena;
 
     public Smestaj() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -30,6 +31,14 @@ public class Smestaj {
 
     public void setIme_smestaja(String ime_smestaja) {
         this.ime_smestaja = ime_smestaja;
+    }
+
+    public String getDrzava() {
+        return drzava;
+    }
+
+    public void setDrzava(String drzava) {
+        this.drzava = drzava;
     }
 
     public String getGrad() {
