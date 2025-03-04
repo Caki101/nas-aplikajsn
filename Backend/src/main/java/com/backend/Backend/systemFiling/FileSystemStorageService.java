@@ -12,12 +12,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class FileSystemStorageService implements StorageService {
     public final Path rootLocation;
-    private List<MultipartFile> files;
 
     @Autowired
     public FileSystemStorageService(StorageConfig properties) {
@@ -50,7 +48,7 @@ public class FileSystemStorageService implements StorageService {
      */
     @Override
     public String store(MultipartFile file, int blog_id) {
-        String file_name = "";
+        String file_name;
         try {
             if (file.isEmpty()) {
                 throw new RuntimeException("File is empty");

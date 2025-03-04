@@ -10,15 +10,12 @@ public class Tiket {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_seq")
     @SequenceGenerator(name = "id_seq", sequenceName = "id_seq", allocationSize = 1, initialValue = 0)
-    private Integer id;
-
-    private String sezona;
-    private String drzava;
-    private String grad;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "smestaj_id", referencedColumnName = "id")
     private Smestaj smestaj;
+    private String sezona;
     private Double cena;
     private Integer trajanje_odmora;
     private Integer broj_osoba;
@@ -32,36 +29,12 @@ public class Tiket {
     public Tiket() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getSezona() {
-        return sezona;
-    }
-
-    public void setSezona(String sezona) {
-        this.sezona = sezona;
-    }
-
-    public String getDrzava() {
-        return drzava;
-    }
-
-    public void setDrzava(String drzava) {
-        this.drzava = drzava;
-    }
-
-    public String getGrad() {
-        return grad;
-    }
-
-    public void setGrad(String grad) {
-        this.grad = grad;
     }
 
     public Smestaj getSmestaj() {
@@ -70,6 +43,14 @@ public class Tiket {
 
     public void setSmestaj(Smestaj smestaj) {
         this.smestaj = smestaj;
+    }
+
+    public String getSezona() {
+        return sezona;
+    }
+
+    public void setSezona(String sezona) {
+        this.sezona = sezona;
     }
 
     public Double getCena() {

@@ -6,12 +6,9 @@ import java.sql.Timestamp;
 
 public class TiketDTO {
 
-    private String sezona;
-    private String drzava;
-    private String grad;
-
     @JsonProperty("smestaj_id")
-    private Integer smestaj_id;
+    private Long smestaj_id;
+    private String sezona;
     private Double cena;
     private Integer trajanje_odmora;
     private Integer broj_osoba;
@@ -19,36 +16,20 @@ public class TiketDTO {
     private String prevoz;
     private Timestamp polazak;
 
+    public Long getSmestaj_id() {
+        return smestaj_id;
+    }
+
+    public void setSmestaj_id(Long smestaj_id) {
+        this.smestaj_id = smestaj_id;
+    }
+
     public String getSezona() {
         return sezona;
     }
 
     public void setSezona(String sezona) {
         this.sezona = sezona;
-    }
-
-    public String getDrzava() {
-        return drzava;
-    }
-
-    public void setDrzava(String drzava) {
-        this.drzava = drzava;
-    }
-
-    public String getGrad() {
-        return grad;
-    }
-
-    public void setGrad(String grad) {
-        this.grad = grad;
-    }
-
-    public Integer getSmestaj_id() {
-        return smestaj_id;
-    }
-
-    public void setSmestaj_id(Integer smestaj_id) {
-        this.smestaj_id = smestaj_id;
     }
 
     public Double getCena() {
