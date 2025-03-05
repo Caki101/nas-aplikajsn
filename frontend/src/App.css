@@ -16,8 +16,10 @@
     font-size: 3rem;
   }
   
+  /* Popraviti http://localhost:3000/images/img-6.jpg u relativan path !!! */
+
   .services {
-    background-image: url('');
+    background-image: url('http://localhost:3000/images/img-6.jpg');
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -26,16 +28,16 @@
   }
   
   .destination {
-    background-image: url('');
+    background-image: url('http://localhost:3000/images/img-6.jpg');
     background-position: center;
-    background-size: fill;
+    background-size: cover;
     background-repeat: no-repeat;
     color: #fff;
     font-size: 100px;
   }
   
   .sign-up {
-    background-image: url('');
+    background-image: url('http://localhost:3000/images/img-6.jpg');
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
