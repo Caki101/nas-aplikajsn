@@ -3,26 +3,42 @@ package com.backend.Backend.api;
 import com.backend.Backend.dataTypes.Smestaj;
 import com.backend.Backend.dataTypes.Tiket;
 import com.backend.Backend.dataTypes.TiketDTO;
+import com.backend.Backend.dataTypes.User;
 import com.backend.Backend.repositories.SmestajRepo;
 import com.backend.Backend.repositories.TiketiRepo;
+import com.backend.Backend.repositories.UsersRepo;
+import com.backend.Backend.security.UserSecurity;
+import com.backend.Backend.systemFiling.StorageService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
 public class RestfulController {
-    private final SmestajRepo smestajRepo;
     private final TiketiRepo tiketiRepo;
+    private final SmestajRepo smestajRepo;
+    private final UsersRepo usersRepo;
+
+    private final StorageService storageService;
+    private final UserSecurity userSecurity;
+
+    Map<HttpSession, Integer> sessions;
 
     @Autowired
-    public RestfulController(SmestajRepo smestajRepo, TiketiRepo tiketiRepo) {
-        this.smestajRepo = smestajRepo;
+    public RestfulController(TiketiRepo tiketiRepo, SmestajRepo smestajRepo, UsersRepo usersRepo, StorageService storageService, UserSecurity userSecurity) {
         this.tiketiRepo = tiketiRepo;
+        this.smestajRepo = smestajRepo;
+        this.usersRepo = usersRepo;
+        this.storageService = storageService;
+        this.userSecurity = userSecurity;
     }
 
     // ***** GET ALL ***** \\
@@ -35,13 +51,25 @@ public class RestfulController {
         return smestaj;
     }
 
-    @GetMapping("/allT")
+    @GetMapping("/p/allT")
     public List<Tiket> findAllT() {
         List<Tiket> tiketi = new ArrayList<>();
 
         tiketiRepo.findAll().forEach(tiketi::add);
 
         return tiketi;
+    }
+
+    /**
+     * Get mapping for all names of image files of a Smestaj with the given smestaj_id.
+     *
+     * @param smestaj_id Smestaj id to get images by.
+     * @return array of file names for images of given Smestaj
+     */
+    @GetMapping("/images_{smestaj_id}")
+    public ResponseEntity<?> images(@PathVariable int smestaj_id) {
+
+        return ResponseEntity.ok(storageService.getAllFilenames(smestaj_id));
     }
 
     // ***** FILTERED GET ***** \\
@@ -66,21 +94,51 @@ public class RestfulController {
         what = what.toLowerCase();
         orderBy = orderBy.toLowerCase();
 
-//        Class<Tiket> tiket_class =  Tiket.class;
-//        List<String> fields = new ArrayList<>();
-//        Arrays.stream(tiket_class.getDeclaredFields()).toList().forEach(field -> fields.add(field.getName().toLowerCase()));
-//
-//        if (fields.contains(what) && fields.contains(orderBy)) return tiketiRepo.findAllTiketiFilter(what, which, orderBy, page);
-
         return tiketiRepo.findAllTiketiFilter(what, which, orderBy, page);
     }
 
     @GetMapping("/tiket_{id}")
-    public ResponseEntity<Tiket> findTiket(@PathVariable Integer id) {
+    public ResponseEntity<Tiket> findTiket(@PathVariable Long id) {
         Optional<Tiket> tiket = tiketiRepo.findById(id);
 
         return tiket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/image_{filename}")
+    @ResponseBody
+    public ResponseEntity<?> image(@PathVariable String filename) {
+        Resource img = storageService.load(filename);
+
+        if (img == null) return ResponseEntity.notFound().build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+
+        return new ResponseEntity<>(img, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/first_image_{smestaj_id}")
+    @ResponseBody
+    public ResponseEntity<?> firstImage(@PathVariable Integer smestaj_id) {
+        Resource img = storageService.loadFirst(smestaj_id);
+
+        if (img == null) return ResponseEntity.notFound().build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+
+        return new ResponseEntity<>(img, headers, HttpStatus.OK);
+    }
+
+//    @GetMapping("/userLogin")
+//    public Boolean userLogin(@RequestParam String email,
+//                          @RequestParam String password,
+//                          HttpSession session) {
+//        Integer exist = sessions.putIfAbsent(session, 0);
+//        if (exist == null) {}
+//
+//        return true;
+//    }
 
     // ***** SAVING ENTITIES *****\\
     @PostMapping("/saveOneT")
@@ -125,5 +183,17 @@ public class RestfulController {
         return ResponseEntity.ok(smestajRepo.saveAll(smestaji));
     }
 
-    // ***** UPLOAD ***** \\
+    @PostMapping("/userSignUp")
+    @ResponseBody
+    public ResponseEntity<?> userSignUp(@RequestBody User user) {
+        String encrypted_password = userSecurity.encryptPassword(user.getPassword());
+        user.setPassword(encrypted_password);
+
+        usersRepo.save(user);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    // ***** UPLOAD FILES ***** \\
 }

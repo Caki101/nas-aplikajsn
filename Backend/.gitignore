@@ -39,4 +39,4 @@ out/
 ### Projects' files ###
 src/main/resources/config.properties
 src/main/java/com/backend/Backend/systemFiling/FileSystemConfig.java
-src/main/java/com/backend/Backend/SystemSecurity.java
+src/main/java/com/backend/Backend/security/SecurityData.java

@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface TiketiRepo extends CrudRepository<Tiket, Integer> {
+public interface TiketiRepo extends CrudRepository<Tiket, Long> {
 
     @Query(nativeQuery = true, value = "select * from tiketiFilter(?,?,?,?)")
     List<Tiket> findAllTiketiFilter(@Param("what") String what,
