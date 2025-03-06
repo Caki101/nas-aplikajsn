@@ -1,5 +1,6 @@
 package com.backend.Backend;
 
+import com.backend.Backend.security.SecurityData;
 import com.backend.Backend.systemFiling.StorageConfig;
 import com.backend.Backend.systemFiling.StorageService;
 import org.springframework.boot.CommandLineRunner;
@@ -32,7 +33,7 @@ public class BackendApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins(SystemSecurity.frontend_origin)
+						.allowedOrigins(SecurityData.frontend_origin)
 						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 						.allowedHeaders("*");
 			}

@@ -1,6 +1,8 @@
 package com.backend.Backend.systemFiling;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,23 +14,25 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class FileSystemStorageService implements StorageService {
-    public final Path rootLocation;
+    final Path rootLocation;
+    ResourceLoader resourceLoader;
 
     @Autowired
-    public FileSystemStorageService(StorageConfig properties) {
+    public FileSystemStorageService(StorageConfig properties,
+                                    ResourceLoader resourceLoader) {
         if(properties.getLocation().trim().isEmpty()){
             throw new RuntimeException("Location is empty.");
         }
 
         this.rootLocation = Paths.get(properties.getLocation());
-    }
-
-    @Override
-    public MultipartFile load(String filename) {
-        return null;
+        this.resourceLoader = resourceLoader;
     }
 
     @Override
@@ -41,20 +45,63 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
+    @Override
+    public Resource load(String filename) {
+        Resource resource = resourceLoader.getResource("file:" + rootLocation + "/" + filename);
+
+        if (!resource.exists()) resource = resourceLoader.getResource("file:" + rootLocation + "/default.png");
+
+        return resource;
+    }
+
+    @Override
+    public Resource loadFirst(Integer id) {
+        Resource resource;
+
+        try (Stream<Path> paths = Files.walk(rootLocation)) {
+            Optional<Path> first_img = paths.filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().startsWith(id.toString()))
+                    .findFirst();
+
+            resource = first_img.map(path -> resourceLoader.getResource("file:" + path)).orElseGet(() -> resourceLoader.getResource("file:" + rootLocation + "/default.png"));
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return resource;
+    }
+
+    @Override
+    public List<String> getAllFilenames(Integer id) {
+        List<String> filenames = new ArrayList<>();
+
+        try (Stream<Path> files = Files.walk(rootLocation)) {
+            files.filter(Files::isRegularFile)
+                    .filter(file -> file.getFileName().toString().startsWith(id.toString()))
+                    .forEach(file -> filenames.add(file.getFileName().toString()));
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return filenames;
+    }
+
     /**
      * documentation
      *
      * @return Saved file name.
      */
     @Override
-    public String store(MultipartFile file, int blog_id) {
+    public String store(MultipartFile file, int id) {
         String file_name;
         try {
             if (file.isEmpty()) {
                 throw new RuntimeException("File is empty");
             }
 
-            file_name = blog_id + "_img_" + Timestamp.valueOf(LocalDateTime.now())
+            file_name = id + "_img_" + Timestamp.valueOf(LocalDateTime.now())
                     .toString()
                     .replace(':','_')
                     .replace('-','_')
@@ -91,5 +138,10 @@ public class FileSystemStorageService implements StorageService {
         catch (Exception e){
             throw new RuntimeException("Could not delete file", e);
         }
+    }
+
+    @Override
+    public void deleteAll(Integer id) {
+
     }
 }
