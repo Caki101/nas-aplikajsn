@@ -1,4 +1,4 @@
-package com.backend.Backend.api;
+package com.backend.Backend.controllers;
 
 import com.backend.Backend.dataTypes.Smestaj;
 import com.backend.Backend.dataTypes.Tiket;
@@ -7,6 +7,7 @@ import com.backend.Backend.dataTypes.User;
 import com.backend.Backend.repositories.SmestajRepo;
 import com.backend.Backend.repositories.TiketiRepo;
 import com.backend.Backend.repositories.UsersRepo;
+import com.backend.Backend.security.JwtUtil;
 import com.backend.Backend.security.UserSecurity;
 import com.backend.Backend.systemFiling.StorageService;
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
@@ -31,6 +33,7 @@ public class RestfulController {
     private final UserSecurity userSecurity;
 
     Map<HttpSession, Integer> sessions;
+    Map<HttpSession, Timestamp> timeout;
 
     @Autowired
     public RestfulController(TiketiRepo tiketiRepo, SmestajRepo smestajRepo, UsersRepo usersRepo, StorageService storageService, UserSecurity userSecurity) {
@@ -39,6 +42,9 @@ public class RestfulController {
         this.usersRepo = usersRepo;
         this.storageService = storageService;
         this.userSecurity = userSecurity;
+
+        sessions = new HashMap<>();
+        timeout = new HashMap<>();
     }
 
     // ***** GET ALL ***** \\
@@ -130,15 +136,58 @@ public class RestfulController {
         return new ResponseEntity<>(img, headers, HttpStatus.OK);
     }
 
-//    @GetMapping("/userLogin")
-//    public Boolean userLogin(@RequestParam String email,
-//                          @RequestParam String password,
-//                          HttpSession session) {
-//        Integer exist = sessions.putIfAbsent(session, 0);
-//        if (exist == null) {}
-//
-//        return true;
-//    }
+    @PostMapping("/userLogin")
+    public ResponseEntity<?> userLogin(@RequestBody User user_request,
+                          HttpSession session) {
+        if (timeout.containsKey(session)){
+            if (System.currentTimeMillis()-timeout.get(session).getTime()>5000){
+                timeout.remove(session);
+            }
+            else return ResponseEntity.status(429).body("Try again later");
+        }
+
+        User user = usersRepo.findFirstByEmail(user_request.getEmail());
+
+        boolean email_valid = user!=null;
+        boolean password_valid = email_valid?userSecurity.verifyPassword(user.getPassword(), user.getPassword()):false;
+
+        if (!email_valid || !password_valid) {
+            if (sessions.containsKey(session)) {
+                if (sessions.get(session) == 3) {
+                    sessions.remove(session);
+                    timeout.put(session, new Timestamp(System.currentTimeMillis()));
+
+                    return ResponseEntity.status(429).body("Try again later");
+                }
+
+                sessions.put(session, sessions.get(session)+1);
+            }
+            else sessions.put(session, 1);
+        }
+
+        if (!email_valid) {
+            return ResponseEntity.status(401).body("Wrong email");
+        }
+
+        if (!userSecurity.verifyPassword(user_request.getPassword(), user.getPassword()))
+            return ResponseEntity.status(401).body("Wrong password");
+
+        sessions.remove(session);
+        timeout.remove(session);
+
+        //String token = JwtUtil.generateToken(user_request.getEmail());
+
+        return ResponseEntity.ok().build();
+    }
+
+    // trying out jwt token generation
+    @GetMapping("/temp1_{user}")
+    public ResponseEntity<?> temp1(@PathVariable String user) {
+        String token;
+        token = JwtUtil.generateToken(user);
+
+        return ResponseEntity.ok(token);
+    }
 
     // ***** SAVING ENTITIES *****\\
     @PostMapping("/saveOneT")
@@ -186,6 +235,12 @@ public class RestfulController {
     @PostMapping("/userSignUp")
     @ResponseBody
     public ResponseEntity<?> userSignUp(@RequestBody User user) {
+        if (usersRepo.existsUserByEmail(user.getEmail()))
+            return ResponseEntity
+                    .status(401)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body("User with that email already exists!");
+
         String encrypted_password = userSecurity.encryptPassword(user.getPassword());
         user.setPassword(encrypted_password);
 
