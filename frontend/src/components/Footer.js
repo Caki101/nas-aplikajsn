@@ -66,7 +66,7 @@ function Footer() {
                         </Link>
                     </div>
                     <small className="website-rights">Traveling Agency</small>
-                    <div className="social-icosn">
+                    <div className="social-icons">
                         <Link className="social-icon-link instagram"
                         to="/"
                         target="_blank"
