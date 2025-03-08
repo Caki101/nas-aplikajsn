@@ -12,8 +12,7 @@ public class User {
 
     String email;
     String password;
-    String firstname;
-    String lastname;
+    String username;
 
     public User() {
     }
@@ -42,19 +41,11 @@ public class User {
         this.password = password;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getUsername() {
+        return username;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

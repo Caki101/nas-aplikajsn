@@ -23,10 +23,18 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String api_key = request.getHeader("Api-Key-Header");
+        String path = request.getRequestURI().substring(1,4);
+
+        if (!path.equals("api")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (api_key != null && api_key.equals(SecurityData.API_KEY)) {
             Authentication auth = new UsernamePasswordAuthenticationToken(
-                    "api-user", null, List.of(new SimpleGrantedAuthority("ROLE_API_USER"))
+                    "api-user",
+                    null,
+                    List.of(new SimpleGrantedAuthority(SecurityData.API_USER))
             );
             SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -34,7 +42,7 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
         }
         else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid API key");
+            response.getWriter().write("Invalid or empty API key");
         }
     }
 }
