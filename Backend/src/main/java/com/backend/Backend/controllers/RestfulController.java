@@ -4,6 +4,7 @@ import com.backend.Backend.dataTypes.Smestaj;
 import com.backend.Backend.dataTypes.Tiket;
 import com.backend.Backend.dataTypes.TiketDTO;
 import com.backend.Backend.dataTypes.User;
+import com.backend.Backend.newsletter.MailgunService;
 import com.backend.Backend.repositories.SmestajRepo;
 import com.backend.Backend.repositories.TiketiRepo;
 import com.backend.Backend.repositories.UsersRepo;
@@ -19,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -32,19 +34,29 @@ public class RestfulController {
     private final StorageService storageService;
     private final UserSecurity userSecurity;
 
+    private final MailgunService mailgunService;
+
     Map<HttpSession, Integer> sessions;
     Map<HttpSession, Timestamp> timeout;
+    Map<Integer, String> unverified;
 
     @Autowired
-    public RestfulController(TiketiRepo tiketiRepo, SmestajRepo smestajRepo, UsersRepo usersRepo, StorageService storageService, UserSecurity userSecurity) {
+    public RestfulController(TiketiRepo tiketiRepo,
+                             SmestajRepo smestajRepo,
+                             UsersRepo usersRepo,
+                             StorageService storageService,
+                             UserSecurity userSecurity,
+                             MailgunService mailgunService) {
         this.tiketiRepo = tiketiRepo;
         this.smestajRepo = smestajRepo;
         this.usersRepo = usersRepo;
         this.storageService = storageService;
         this.userSecurity = userSecurity;
+        this.mailgunService = mailgunService;
 
         sessions = new HashMap<>();
         timeout = new HashMap<>();
+        unverified = new HashMap<>();
     }
 
     // ***** GET ALL ***** \\
@@ -249,6 +261,61 @@ public class RestfulController {
         return ResponseEntity.ok().build();
     }
 
+    // in tesing
+    @PostMapping("/userSignUp1")
+    @ResponseBody
+    public ResponseEntity<?> userSignUp1(@RequestBody User user) {
+        if (usersRepo.existsUserByEmail(user.getEmail()))
+            return ResponseEntity
+                    .status(401)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body("User with that email already exists!");
+
+        String encrypted_password = userSecurity.encryptPassword(user.getPassword());
+        user.setPassword(encrypted_password);
+
+        usersRepo.save(user);
+
+        SecureRandom random = new SecureRandom();
+
+        int random_number = random.nextInt();
+
+        mailgunService.sendEmail(
+                user.getEmail(),
+                "Verify Account",
+                "<div><a href='http://localhost:8080/api/verify/"+random_number+"'>verify your account here</a></div>");
+
+        unverified.put(random_number, user.getEmail());
+
+        return ResponseEntity.ok("Verify email");
+    }
+
+    // in tesing
+    @GetMapping("/verify/{code}")
+    @ResponseBody
+    public ResponseEntity<?> verifyEmail(@PathVariable Integer code) {
+        if (unverified.containsKey(code)) {
+            usersRepo.verified(unverified.get(code));
+            unverified.remove(code);
+
+            return ResponseEntity.ok().build();
+        }
+        else return ResponseEntity.badRequest().build();
+    }
+
+    // ***** FORGOT PASSWORD ***** \\
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<?> forgotPassword(@RequestBody User user) {
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            User usr = usersRepo.findFirstByEmail(user.getEmail());
+            if (usr != null) {
+                // need code to send link for resetting password to email
+                return ResponseEntity.ok().build();
+            }
+            else return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
 
     // ***** UPLOAD FILES ***** \\
 }

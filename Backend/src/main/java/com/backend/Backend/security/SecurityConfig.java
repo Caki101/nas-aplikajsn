@@ -25,9 +25,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests -> {
-                    authorizeRequests.requestMatchers("/auth/**").hasRole(SecurityData.AUTH_USER);
-                    authorizeRequests.requestMatchers("/api/**").hasRole(SecurityData.API_USER);
-                    authorizeRequests.anyRequest().authenticated();
+                    authorizeRequests.requestMatchers("/api/verify/*").permitAll(); // temporary, needs fixing
+                    authorizeRequests.requestMatchers("/auth/**").hasAuthority(SecurityData.AUTH_USER);
+                    authorizeRequests.requestMatchers("/api/**").hasAuthority(SecurityData.API_USER);
                 })
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())

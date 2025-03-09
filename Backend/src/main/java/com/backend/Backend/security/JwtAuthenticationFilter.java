@@ -19,13 +19,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
-        String path = request.getRequestURI().substring(1,5);
+        String path = request.getRequestURI();
 
-        if (!path.equals("auth")) {
+        if (!path.startsWith("/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        String token = request.getHeader("Authorization");
 
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
@@ -54,7 +55,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("Invalid token. 'Bearer' prefix required.");
         }
-
         filterChain.doFilter(request, response);
     }
 }
