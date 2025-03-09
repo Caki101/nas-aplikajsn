@@ -6,7 +6,7 @@ import './HeroSection.css';
 function HeroSection() {
     return (
         <div className="hero-container">
-            <video src="/videos/video-8.mp4" autoPlay loop onLoadedMetadata={(e) => e.target.volume = 0.1} /*muted*/ />
+            <video src="/videos/video-8.mp4" autoPlay loop onLoadedMetadata={(e) => e.target.volume = 0.1} muted />
             <h1>Start Today!</h1>
             <p>Whole world, just one click away</p>
             <div className="hero-btns">
