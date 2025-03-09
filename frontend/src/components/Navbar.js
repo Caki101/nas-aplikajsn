@@ -7,6 +7,7 @@ function Navbar() {
     const [click, setClick] = useState(false);
     const [button, setButton] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [profileOpen, setProfileOpen] = useState(false);
 
     const handleClick = () => setClick(!click);
     const closeMobileMenu = () => setClick(false);
@@ -46,6 +47,11 @@ function Navbar() {
     const handleLogout = () => {
         localStorage.removeItem('authToken');
         setIsLoggedIn(false);
+        setProfileOpen(false);
+    };
+
+    const toggleProfileContainer = () => {
+        setProfileOpen(!profileOpen);
     };
 
     return (
@@ -80,20 +86,19 @@ function Navbar() {
                             </Link>
                         </li>
 
-                        {isLoggedIn ? (
-                            <>
-                                <li className="nav-item">
-                                    <Link to="/profile" className="nav-links" onClick={closeMobileMenu}>
-                                        Profile
-                                    </Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link to="/" className="nav-links" onClick={handleLogout}>
+                        {isLoggedIn && (
+                            <li className="nav-item" onClick={closeMobileMenu}>
+                                <div className="nav-links" onClick={toggleProfileContainer}>
+                                    Profile <i className={'fa fa-user'} />
+                                </div>
+                                <div className={`profile-container ${profileOpen ? "open" : ""}`}>
+                                    <Link to="/" className="profile-item" onClick={handleLogout}>
                                         Logout
                                     </Link>
-                                </li>
-                            </>
-                        ) : (
+                                </div>
+                            </li>
+                        )}
+                        {!isLoggedIn && (
                             <li className="nav-item">
                                 <Link to="/sign-up" className="nav-links-mobile" onClick={closeMobileMenu}>
                                     Sign up
