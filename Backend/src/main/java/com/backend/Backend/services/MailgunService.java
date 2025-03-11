@@ -10,16 +10,18 @@ import org.springframework.web.client.RestTemplate;
 public class MailgunService {
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // need to be processed in thread
     @Async
     public void sendEmail(String toEmail, String subject, String content) {
-        String url = "https://api.mailgun.net/v3/" + SecurityData.MAILGUN_DOMAIN + "/messages";
+        // temp fix
+        if (!toEmail.contains("@")) return;
+
+        String url = "https://api.eu.mailgun.net/v3/" + SecurityData.MAILGUN_DOMAIN + "/messages";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("api", SecurityData.MAILGUN_API);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        String body = "from=newsletter@travel" // need better newsletter mail
+        String body = "from=newsletter@" + SecurityData.MAILGUN_DOMAIN
                 + "&to=" + toEmail
                 + "&subject=" + subject
                 + "&html=" + content;

@@ -5,6 +5,7 @@ import com.backend.Backend.dataTypes.Smestaj;
 import com.backend.Backend.dataTypes.Tiket;
 import com.backend.Backend.dataTypes.TiketDTO;
 import com.backend.Backend.dataTypes.User;
+import com.backend.Backend.security.SecurityData;
 import com.backend.Backend.services.ConfirmationService;
 import com.backend.Backend.services.MailgunService;
 import com.backend.Backend.repositories.SmestajRepo;
@@ -27,13 +28,12 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api")
-public class RestfulController {
+public class ApiController {
     private final TiketiRepo tiketiRepo;
     private final SmestajRepo smestajRepo;
     private final UsersRepo usersRepo;
 
     private final StorageService storageService;
-    private final UserSecurity userSecurity;
 
     private final MailgunService mailgunService;
     private final ConfirmationService confirmationService;
@@ -44,19 +44,17 @@ public class RestfulController {
     Map<HttpSession, Timestamp> timeout;
 
     @Autowired
-    public RestfulController(TiketiRepo tiketiRepo,
-                             SmestajRepo smestajRepo,
-                             UsersRepo usersRepo,
-                             StorageService storageService,
-                             UserSecurity userSecurity,
-                             MailgunService mailgunService,
-                             ConfirmationService confirmationService,
-                             ConfirmationListener confirmationListener) {
+    public ApiController(TiketiRepo tiketiRepo,
+                         SmestajRepo smestajRepo,
+                         UsersRepo usersRepo,
+                         StorageService storageService,
+                         MailgunService mailgunService,
+                         ConfirmationService confirmationService,
+                         ConfirmationListener confirmationListener) {
         this.tiketiRepo = tiketiRepo;
         this.smestajRepo = smestajRepo;
         this.usersRepo = usersRepo;
         this.storageService = storageService;
-        this.userSecurity = userSecurity;
         this.mailgunService = mailgunService;
         this.confirmationService = confirmationService;
         this.confirmationListener = confirmationListener;
@@ -75,7 +73,7 @@ public class RestfulController {
         return smestaj;
     }
 
-    @GetMapping("/p/allT")
+    @GetMapping("/allT")
     public List<Tiket> findAllT() {
         List<Tiket> tiketi = new ArrayList<>();
 
@@ -167,7 +165,7 @@ public class RestfulController {
         User user = usersRepo.findFirstByEmail(user_request.getEmail());
 
         boolean email_valid = user!=null;
-        boolean password_valid = email_valid?userSecurity.verifyPassword(user.getPassword(), user.getPassword()):false;
+        boolean password_valid = email_valid?UserSecurity.verifyPassword(user.getPassword(), user.getPassword()):false;
 
         if (!email_valid || !password_valid) {
             if (sessions.containsKey(session)) {
@@ -187,7 +185,7 @@ public class RestfulController {
             return ResponseEntity.status(401).body("Wrong email");
         }
 
-        if (!userSecurity.verifyPassword(user_request.getPassword(), user.getPassword()))
+        if (!UserSecurity.verifyPassword(user_request.getPassword(), user.getPassword()))
             return ResponseEntity.status(401).body("Wrong password");
 
         sessions.remove(session);
@@ -259,53 +257,54 @@ public class RestfulController {
                     .contentType(MediaType.TEXT_PLAIN)
                     .body("User with that email already exists!");
 
-        String encrypted_password = userSecurity.encryptPassword(user.getPassword());
+        String encrypted_password = UserSecurity.encryptPassword(user.getPassword());
         user.setPassword(encrypted_password);
-
         usersRepo.save(user);
 
-        return ResponseEntity.ok().build();
-    }
-
-    // in testing
-    @PostMapping("/userSignUp1")
-    @ResponseBody
-    public ResponseEntity<?> userSignUp1(@RequestBody User user) {
-        if (usersRepo.existsUserByEmail(user.getEmail()))
-            return ResponseEntity
-                    .status(401)
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body("User with that email already exists!");
-
-        String encrypted_password = userSecurity.encryptPassword(user.getPassword());
-        user.setPassword(encrypted_password);
-
-        usersRepo.save(user);
-
-        String token = confirmationService.generateToken();
+        String token = confirmationService.generateToken(user.getEmail());
 
         mailgunService.sendEmail(
                 user.getEmail(),
                 "Verify Account",
-                "<div><a href='http://26.10.184.197:8080/api/verify/"+token+"'>verify your account here</a></div>");
+                "<div><a href='http://"
+                        + SecurityData.ORIGIN
+                        + "/public-api/verify_account/"
+                        + token
+                        + "'>verify your account here</a></div>"
+        );
 
         boolean confirmed = confirmationListener.waitForConfirmation(token,60_000);
-
-        if (confirmed) return ResponseEntity.ok("Confirmed");
+        if (confirmed){
+            usersRepo.verified(user.getEmail());
+            return ResponseEntity.ok("Confirmed");
+        }
 
         return ResponseEntity.badRequest().body("Timed out");
     }
 
     // ***** FORGOT PASSWORD ***** \\
+    // needs more testing
     @PostMapping("/forgotPassword")
     public ResponseEntity<?> forgotPassword(@RequestBody User user) {
         if (user.getEmail() != null && !user.getEmail().isEmpty()) {
             User usr = usersRepo.findFirstByEmail(user.getEmail());
             if (usr != null) {
-                // need code to send link for resetting password to email
+                String token = confirmationService.generateToken(user.getEmail());
+                mailgunService.sendEmail(
+                        user.getEmail(),
+                        "Forgotten password",
+                        "<a href='http://"
+                                + SecurityData.ORIGIN
+                                + "/pages/reset_password/"
+                                + token
+                                + "?email="
+                                + user.getEmail()
+                                + "'>Reset password</a>"
+                );
+
                 return ResponseEntity.ok().build();
             }
-            else return ResponseEntity.notFound().build();
+            else return ResponseEntity.status(404).body("User not found");
         }
         return ResponseEntity.badRequest().build();
     }

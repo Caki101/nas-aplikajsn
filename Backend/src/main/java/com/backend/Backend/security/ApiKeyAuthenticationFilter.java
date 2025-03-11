@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
@@ -25,7 +27,7 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // temp logging method for requests to api
-        System.err.println(request.getRequestURL() + "  |  " + request.getMethod());
+        System.err.println(request.getRequestURL() + "  |  " + request.getMethod() + "  |  " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
 
         if (!path.startsWith("/api")) {
             filterChain.doFilter(request, response);
