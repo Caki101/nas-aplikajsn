@@ -33,7 +33,7 @@ public class BackendApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins(SecurityData.frontend_origin)
+						.allowedOrigins(SecurityData.FRONTEND_ORIGIN)
 						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 						.allowedHeaders("*");
 			}

@@ -24,10 +24,10 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
 
+        // temp logging method for requests to api
         System.err.println(request.getRequestURL() + "  |  " + request.getMethod());
 
-        // checking verify is temporary fix
-        if (!path.startsWith("/api") || path.contains("verify")) {
+        if (!path.startsWith("/api")) {
             filterChain.doFilter(request, response);
             return;
         }

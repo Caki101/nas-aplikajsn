@@ -1,5 +1,8 @@
-package com.backend.Backend.security;
+package com.backend.Backend.configs;
 
+import com.backend.Backend.security.ApiKeyAuthenticationFilter;
+import com.backend.Backend.security.JwtAuthenticationFilter;
+import com.backend.Backend.security.SecurityData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +28,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests -> {
-                    authorizeRequests.requestMatchers("/api/verify/*").permitAll(); // temporary, needs fixing
-                    authorizeRequests.requestMatchers("/auth/**").hasAuthority(SecurityData.AUTH_USER);
+                    //authorizeRequests.requestMatchers("/auth/**").hasAuthority(SecurityData.AUTH_USER); disabled for testing purposes
                     authorizeRequests.requestMatchers("/api/**").hasAuthority(SecurityData.API_USER);
+                    authorizeRequests.requestMatchers("/public/**").permitAll();
+                    authorizeRequests.anyRequest().permitAll();
                 })
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())

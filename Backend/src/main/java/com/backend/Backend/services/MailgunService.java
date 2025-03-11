@@ -1,7 +1,8 @@
-package com.backend.Backend.newsletter;
+package com.backend.Backend.services;
 
 import com.backend.Backend.security.SecurityData;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,6 +11,7 @@ public class MailgunService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     // need to be processed in thread
+    @Async
     public void sendEmail(String toEmail, String subject, String content) {
         String url = "https://api.mailgun.net/v3/" + SecurityData.MAILGUN_DOMAIN + "/messages";
 

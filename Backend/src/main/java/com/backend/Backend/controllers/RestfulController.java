@@ -1,10 +1,12 @@
 package com.backend.Backend.controllers;
 
+import com.backend.Backend.comps.ConfirmationListener;
 import com.backend.Backend.dataTypes.Smestaj;
 import com.backend.Backend.dataTypes.Tiket;
 import com.backend.Backend.dataTypes.TiketDTO;
 import com.backend.Backend.dataTypes.User;
-import com.backend.Backend.newsletter.MailgunService;
+import com.backend.Backend.services.ConfirmationService;
+import com.backend.Backend.services.MailgunService;
 import com.backend.Backend.repositories.SmestajRepo;
 import com.backend.Backend.repositories.TiketiRepo;
 import com.backend.Backend.repositories.UsersRepo;
@@ -20,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -35,10 +36,12 @@ public class RestfulController {
     private final UserSecurity userSecurity;
 
     private final MailgunService mailgunService;
+    private final ConfirmationService confirmationService;
+
+    private final ConfirmationListener  confirmationListener;
 
     Map<HttpSession, Integer> sessions;
     Map<HttpSession, Timestamp> timeout;
-    Map<Integer, String> unverified;
 
     @Autowired
     public RestfulController(TiketiRepo tiketiRepo,
@@ -46,17 +49,20 @@ public class RestfulController {
                              UsersRepo usersRepo,
                              StorageService storageService,
                              UserSecurity userSecurity,
-                             MailgunService mailgunService) {
+                             MailgunService mailgunService,
+                             ConfirmationService confirmationService,
+                             ConfirmationListener confirmationListener) {
         this.tiketiRepo = tiketiRepo;
         this.smestajRepo = smestajRepo;
         this.usersRepo = usersRepo;
         this.storageService = storageService;
         this.userSecurity = userSecurity;
         this.mailgunService = mailgunService;
+        this.confirmationService = confirmationService;
+        this.confirmationListener = confirmationListener;
 
         sessions = new HashMap<>();
         timeout = new HashMap<>();
-        unverified = new HashMap<>();
     }
 
     // ***** GET ALL ***** \\
@@ -261,7 +267,7 @@ public class RestfulController {
         return ResponseEntity.ok().build();
     }
 
-    // in tesing
+    // in testing
     @PostMapping("/userSignUp1")
     @ResponseBody
     public ResponseEntity<?> userSignUp1(@RequestBody User user) {
@@ -276,31 +282,18 @@ public class RestfulController {
 
         usersRepo.save(user);
 
-        SecureRandom random = new SecureRandom();
-
-        int random_number = random.nextInt();
+        String token = confirmationService.generateToken();
 
         mailgunService.sendEmail(
                 user.getEmail(),
                 "Verify Account",
-                "<div><a href='http://localhost:8080/api/verify/"+random_number+"'>verify your account here</a></div>");
+                "<div><a href='http://26.10.184.197:8080/api/verify/"+token+"'>verify your account here</a></div>");
 
-        unverified.put(random_number, user.getEmail());
+        boolean confirmed = confirmationListener.waitForConfirmation(token,60_000);
 
-        return ResponseEntity.ok("Verify email");
-    }
+        if (confirmed) return ResponseEntity.ok("Confirmed");
 
-    // in tesing
-    @GetMapping("/verify/{code}")
-    @ResponseBody
-    public ResponseEntity<?> verifyEmail(@PathVariable Integer code) {
-        if (unverified.containsKey(code)) {
-            usersRepo.verified(unverified.get(code));
-            unverified.remove(code);
-
-            return ResponseEntity.ok().build();
-        }
-        else return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body("Timed out");
     }
 
     // ***** FORGOT PASSWORD ***** \\
