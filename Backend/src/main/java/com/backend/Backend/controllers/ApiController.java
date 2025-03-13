@@ -1,10 +1,8 @@
 package com.backend.Backend.controllers;
 
 import com.backend.Backend.comps.ConfirmationListener;
-import com.backend.Backend.dataTypes.Smestaj;
-import com.backend.Backend.dataTypes.Tiket;
-import com.backend.Backend.dataTypes.TiketDTO;
-import com.backend.Backend.dataTypes.User;
+import com.backend.Backend.dataTypes.*;
+import com.backend.Backend.repositories.NewsletterRepo;
 import com.backend.Backend.security.SecurityData;
 import com.backend.Backend.services.ConfirmationService;
 import com.backend.Backend.services.MailgunService;
@@ -39,6 +37,7 @@ public class ApiController {
     private final ConfirmationService confirmationService;
 
     private final ConfirmationListener  confirmationListener;
+    private final NewsletterRepo newsletterRepo;
 
     Map<HttpSession, Integer> sessions;
     Map<HttpSession, Timestamp> timeout;
@@ -50,13 +49,17 @@ public class ApiController {
                          StorageService storageService,
                          MailgunService mailgunService,
                          ConfirmationService confirmationService,
-                         ConfirmationListener confirmationListener) {
+                         ConfirmationListener confirmationListener,
+                         NewsletterRepo newsletterRepo) {
         this.tiketiRepo = tiketiRepo;
         this.smestajRepo = smestajRepo;
         this.usersRepo = usersRepo;
+        this.newsletterRepo = newsletterRepo;
+
         this.storageService = storageService;
         this.mailgunService = mailgunService;
         this.confirmationService = confirmationService;
+
         this.confirmationListener = confirmationListener;
 
         sessions = new HashMap<>();
@@ -77,7 +80,7 @@ public class ApiController {
     public List<Tiket> findAllT() {
         List<Tiket> tiketi = new ArrayList<>();
 
-        tiketiRepo.findAll().forEach(tiketi::add);
+        tiketi.addAll(tiketiRepo.findAllAvailable());
 
         return tiketi;
     }
@@ -90,7 +93,6 @@ public class ApiController {
      */
     @GetMapping("/images_{smestaj_id}")
     public ResponseEntity<?> images(@PathVariable int smestaj_id) {
-
         return ResponseEntity.ok(storageService.getAllFilenames(smestaj_id));
     }
 
@@ -191,63 +193,16 @@ public class ApiController {
         sessions.remove(session);
         timeout.remove(session);
 
-        //String token = JwtUtil.generateToken(user_request.getEmail());
+        String token = JwtUtil.generateToken(user_request.getEmail());
 
-        return ResponseEntity.ok().build();
-    }
+        UserFD userFD = new UserFD();
+        userFD.setUsername(user.getUsername());
+        userFD.setJwtToken(token);
 
-    // trying out jwt token generation
-    @GetMapping("/temp1_{user}")
-    public ResponseEntity<?> temp1(@PathVariable String user) {
-        String token;
-        token = JwtUtil.generateToken(user);
-
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(userFD);
     }
 
     // ***** SAVING ENTITIES *****\\
-    @PostMapping("/saveOneT")
-    @ResponseBody
-    public ResponseEntity<?> saveOneT(@RequestBody Tiket tiket) {
-        return ResponseEntity.ok(tiketiRepo.save(tiket));
-    }
-
-    @PostMapping("/saveAllT")
-    @ResponseBody
-    public ResponseEntity<?> saveAllT(@RequestBody List<TiketDTO> tiketi) {
-        List<Tiket> tiketi_list = new ArrayList<>();
-        tiketi.forEach(tiket -> {
-            Tiket tkt = new Tiket();
-
-            Smestaj sm = new Smestaj();
-            sm.setId(tiket.getSmestaj_id());
-            tkt.setSmestaj(sm);
-
-            tkt.setSezona(tiket.getSezona());
-            tkt.setCena(tiket.getCena());
-            tkt.setTrajanje_odmora(tiket.getTrajanje_odmora());
-            tkt.setBroj_osoba(tiket.getBroj_osoba());
-            tkt.setBroj_tiketa(tiket.getBroj_tiketa());
-            tkt.setPrevoz(tiket.getPrevoz());
-            tkt.setPolazak(tiket.getPolazak());
-
-            tiketi_list.add(tkt);
-        });
-        return ResponseEntity.ok(tiketiRepo.saveAll(tiketi_list));
-    }
-
-    @PostMapping("/saveOneS")
-    @ResponseBody
-    public ResponseEntity<?> saveOneS(@RequestBody Smestaj smestaj) {
-        return ResponseEntity.ok(smestajRepo.save(smestaj));
-    }
-
-    @PostMapping("/saveAllS")
-    @ResponseBody
-    public ResponseEntity<?> saveAllS(@RequestBody List<Smestaj> smestaji) {
-        return ResponseEntity.ok(smestajRepo.saveAll(smestaji));
-    }
-
     @PostMapping("/userSignUp")
     @ResponseBody
     public ResponseEntity<?> userSignUp(@RequestBody User user) {
@@ -282,8 +237,20 @@ public class ApiController {
         return ResponseEntity.badRequest().body("Timed out");
     }
 
+    /**
+     * Adds new newsletter subscriber.
+     *
+     * @param nls newsletter subscriber
+     * @return status of request
+     */
+    @PostMapping("/add_nls")
+    public ResponseEntity<?> addNLS(@RequestBody NewsletterSubscriber nls) {
+        if (nls == null) return ResponseEntity.badRequest().build();
+        if (!newsletterRepo.existsByEmail(nls.getEmail())) newsletterRepo.save(nls);
+        return ResponseEntity.ok().build();
+    }
+
     // ***** FORGOT PASSWORD ***** \\
-    // needs more testing
     @PostMapping("/forgotPassword")
     public ResponseEntity<?> forgotPassword(@RequestBody User user) {
         if (user.getEmail() != null && !user.getEmail().isEmpty()) {
@@ -310,4 +277,47 @@ public class ApiController {
     }
 
     // ***** UPLOAD FILES ***** \\
+
+
+    // ***** DEVELOPER / TESTING ENDPOINTS ***** \\
+    // so - save one
+    // sa - save all
+
+    @PostMapping("/soTiket")
+    public ResponseEntity<?> saveOneT(@RequestBody Tiket tiket) {
+        return ResponseEntity.ok(tiketiRepo.save(tiket));
+    }
+
+    @PostMapping("/saTiket")
+    public ResponseEntity<?> saveAllT(@RequestBody List<TiketDTO> tiketi) {
+        List<Tiket> tiketi_list = new ArrayList<>();
+        tiketi.forEach(tiket -> {
+            Tiket tkt = new Tiket();
+
+            Smestaj sm = new Smestaj();
+            sm.setId(tiket.getSmestaj_id());
+            tkt.setSmestaj(sm);
+
+            tkt.setSezona(tiket.getSezona());
+            tkt.setCena(tiket.getCena());
+            tkt.setTrajanje_odmora(tiket.getTrajanje_odmora());
+            tkt.setBroj_osoba(tiket.getBroj_osoba());
+            tkt.setBroj_tiketa(tiket.getBroj_tiketa());
+            tkt.setPrevoz(tiket.getPrevoz());
+            tkt.setPolazak(tiket.getPolazak());
+
+            tiketi_list.add(tkt);
+        });
+        return ResponseEntity.ok(tiketiRepo.saveAll(tiketi_list));
+    }
+
+    @PostMapping("/soSmestaj")
+    public ResponseEntity<?> saveOneS(@RequestBody Smestaj smestaj) {
+        return ResponseEntity.ok(smestajRepo.save(smestaj));
+    }
+
+    @PostMapping("/saSmestaj")
+    public ResponseEntity<?> saveAllS(@RequestBody List<Smestaj> smestaji) {
+        return ResponseEntity.ok(smestajRepo.saveAll(smestaji));
+    }
 }

@@ -72,6 +72,12 @@ public class FileSystemStorageService implements StorageService {
         return resource;
     }
 
+    /**
+     * Method to get all names of the files for given smestaj id.
+     *
+     * @param id id of smestaj
+     * @return List of all filenames with param id as prefix
+     */
     @Override
     public List<String> getAllFilenames(Integer id) {
         List<String> filenames = new ArrayList<>();

@@ -8,13 +8,14 @@ import java.sql.Timestamp;
 @Table(name = "tiketi")
 public class Tiket {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_seq")
-    @SequenceGenerator(name = "id_seq", sequenceName = "id_seq", allocationSize = 1, initialValue = 0)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tiketi_id_seq")
+    @SequenceGenerator(name = "tiketi_id_seq", sequenceName = "tiketi_id_seq", allocationSize = 1, initialValue = 0)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "smestaj_id", referencedColumnName = "id")
     private Smestaj smestaj;
+
     private String sezona;
     private Double cena;
     private Integer trajanje_odmora;

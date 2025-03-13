@@ -28,10 +28,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests -> {
-                    //authorizeRequests.requestMatchers("/auth/**").hasAuthority(SecurityData.AUTH_USER); disabled for testing purposes
+                    authorizeRequests.requestMatchers("/auth/**").hasAuthority(SecurityData.AUTH_USER);
                     authorizeRequests.requestMatchers("/api/**").hasAuthority(SecurityData.API_USER);
-                    authorizeRequests.requestMatchers("/public/**").permitAll();
-                    authorizeRequests.anyRequest().permitAll();
+                    authorizeRequests.requestMatchers("/public-api/**").permitAll();
+                    authorizeRequests.requestMatchers("/testing/**").permitAll();
+                    authorizeRequests.anyRequest().authenticated();
                 })
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())

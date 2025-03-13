@@ -14,4 +14,13 @@ public interface TiketiRepo extends CrudRepository<Tiket, Long> {
                                     @Param("which") String which,
                                     @Param("orderBy") String orderBy,
                                     @Param("page") Integer page);
+
+    @Query(nativeQuery = true, value =
+            "with avg_cena as (" +
+                "select avg(cena) as avg_cena from tiketi)" +
+            "select * from tiketi, avg_cena order by abs(cena-avg_cena) limit 1")
+    Tiket findAveragePriceTiket();
+
+    @Query(nativeQuery = true, value = "select * from tiketi where broj_tiketa > 0")
+    List<Tiket> findAllAvailable();
 }

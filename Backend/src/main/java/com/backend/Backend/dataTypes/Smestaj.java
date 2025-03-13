@@ -12,7 +12,7 @@ public class Smestaj {
     String ime_smestaja;
     String drzava;
     String grad;
-    Integer ocena;
+    Double ocena;
 
     public Smestaj() {
     }
@@ -49,11 +49,11 @@ public class Smestaj {
         this.grad = grad;
     }
 
-    public Integer getOcena() {
+    public Double getOcena() {
         return ocena;
     }
 
-    public void setOcena(Integer ocena) {
+    public void setOcena(Double ocena) {
         this.ocena = ocena;
     }
 }
