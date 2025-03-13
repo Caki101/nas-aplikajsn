@@ -1,0 +1,126 @@
+
+body {
+    background: #242424;
+}
+
+.profile-board {
+    display: flex;
+    gap: 20px;
+    margin: 20px;
+  }
+
+.profile-board-content {
+    background: #fff;
+    flex: 1;
+    border-radius: 20px;
+    padding: 2rem;
+    gap: 1.5rem;
+    justify-content: space-between;
+}
+
+.mainbar {
+    background: #fff;
+    color: #242424;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    flex-grow: 1;
+    height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  
+  h2 {
+    margin-bottom: 30px;
+  }
+  
+  .info-item {
+    margin-bottom: 15px;
+    width: 300px;
+  }
+  
+  .info-item label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 20px;
+  }
+  
+  .info-item input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 5px;
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  
+  .info-item input[disabled] {
+    background-color: #d3d3d3;
+    color: #666;
+  }
+  
+  .side-bar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2.3rem;
+    height: 94vh;
+}
+
+.side-bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.side-bar-list .item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 1.1rem;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.3 ease-in-out;
+    color: #fff;
+    cursor: pointer;
+}
+
+.side-bar-list .item:hover{
+    background: #fff;
+    color: #28282B;
+}
+
+.fa-gear,
+.fa-key,
+.fa-bus,
+.fa-house {
+    font-size: 30px;
+    margin: 0px 15px;
+}
+
+.password-reset {
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+  }
+  
+  .password-reset input {
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+  }
+  
+  .password-reset button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+  }

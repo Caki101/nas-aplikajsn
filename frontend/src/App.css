@@ -101,12 +101,12 @@
     border-radius: 6px;
   }
 
-.fa-user,
-.fa-envelope,
-.fa-lock {
-    font-size: 30px;
-    margin: 0px 15px;
-}
+  .fa-user,
+  .fa-envelope,
+  .fa-lock {
+      font-size: 30px;
+      margin: 0px 15px;
+  }
 
   .sign-up-input input{
     height: 50px;

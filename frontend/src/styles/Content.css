@@ -1,0 +1,60 @@
+.content {
+    width: 100%;
+}
+
+.content--header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header--title {
+    color: #242424;
+    font-size: 4rem;
+}
+
+.header--activity {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-box {
+    background: rgb(224, 224, 230);
+    padding: 8px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 5px;
+}
+
+.fa-search,
+.fa-bell {
+    color: #242424;
+    cursor: pointer;
+    font-size: 20px;
+    transition: 0.4s ease-in-out;
+}
+
+.fa-search:hover,
+.fa-bell:hover {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.notify {
+    background: rgb(224, 224, 230);
+    padding: 12px;
+    border-radius: 8px;
+    color: #242424;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

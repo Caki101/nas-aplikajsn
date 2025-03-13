@@ -106,6 +106,10 @@
   font-size: 20px;
 }
 
+.nav-links {
+  cursor: pointer;
+}
+
 @media screen and (max-width: 960px) {
   .navbar-container {
       justify-content: center;

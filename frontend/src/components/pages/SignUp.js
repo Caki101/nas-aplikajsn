@@ -57,11 +57,13 @@ const SignUp = () => {
             setErrorMessage('');
             setSuccessMessage(result.message);
 
-            localStorage.setItem('authToken', result.token);
+            const userInfo = result.username || username;
+            localStorage.setItem('authToken', result.jwtToken);
+            localStorage.setItem('username', userInfo);
             window.dispatchEvent(new Event("storage"));
-            navigate('/');
+            navigate('/Profile');
 
-            setUsername('');
+            setUsername(userInfo);
             setEmail('');
             setPassword('');
     

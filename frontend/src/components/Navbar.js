@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from './Button';
-import './Navbar.css';
+import '../styles/Navbar.css';
 
 function Navbar() {
     const [click, setClick] = useState(false);
@@ -92,6 +92,9 @@ function Navbar() {
                                     Profile <i className={'fa fa-user'} />
                                 </div>
                                 <div className={`profile-container ${profileOpen ? "open" : ""}`}>
+                                    <Link to="/Profile" className="profile-item" onClick={()=> setProfileOpen(false)}>
+                                        More
+                                    </Link>
                                     <Link to="/" className="profile-item" onClick={handleLogout}>
                                         Logout
                                     </Link>

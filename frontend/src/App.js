@@ -7,6 +7,7 @@ import Destination from './components/pages/Destination';
 import DataDisplay from './components/pages/DataDisplay';
 import Services from './components/pages/Services';
 import SignUp from './components/pages/SignUp';
+import Profile from './components/pages/Profile';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path='/services' exact Component={Services} />
         <Route path='/sign-up' exact Component={SignUp} />
         <Route path='/dataDisplay' exact Component={DataDisplay} />
+        <Route path='/profile' exact Component={Profile} />
       </Routes>
     </Router>
     </>
