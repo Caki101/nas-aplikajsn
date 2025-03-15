@@ -9,6 +9,7 @@ public class Smestaj {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "smestaj_id_seq")
     @SequenceGenerator(name = "smestaj_id_seq", sequenceName = "smestaj_id_seq", allocationSize = 1, initialValue = 0)
     private Long id;
+
     String ime_smestaja;
     String drzava;
     String grad;

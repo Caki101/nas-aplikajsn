@@ -2,26 +2,20 @@ package com.backend.Backend.controllers;
 
 import com.backend.Backend.comps.ConfirmationListener;
 import com.backend.Backend.dataTypes.*;
-import com.backend.Backend.repositories.NewsletterRepo;
+import com.backend.Backend.repositories.*;
 import com.backend.Backend.security.SecurityData;
+import com.backend.Backend.security.TimeoutSessions ;
 import com.backend.Backend.services.ConfirmationService;
 import com.backend.Backend.services.MailgunService;
-import com.backend.Backend.repositories.SmestajRepo;
-import com.backend.Backend.repositories.TiketiRepo;
-import com.backend.Backend.repositories.UsersRepo;
 import com.backend.Backend.security.JwtUtil;
 import com.backend.Backend.security.UserSecurity;
 import com.backend.Backend.systemFiling.StorageService;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
@@ -30,17 +24,14 @@ public class ApiController {
     private final TiketiRepo tiketiRepo;
     private final SmestajRepo smestajRepo;
     private final UsersRepo usersRepo;
+    private final NewsletterRepo newsletterRepo;
+    private final KupljeniTiketiRepo kupljeniTiketiRepo;
 
     private final StorageService storageService;
-
     private final MailgunService mailgunService;
     private final ConfirmationService confirmationService;
 
     private final ConfirmationListener  confirmationListener;
-    private final NewsletterRepo newsletterRepo;
-
-    Map<HttpSession, Integer> sessions;
-    Map<HttpSession, Timestamp> timeout;
 
     @Autowired
     public ApiController(TiketiRepo tiketiRepo,
@@ -50,20 +41,19 @@ public class ApiController {
                          MailgunService mailgunService,
                          ConfirmationService confirmationService,
                          ConfirmationListener confirmationListener,
-                         NewsletterRepo newsletterRepo) {
+                         NewsletterRepo newsletterRepo,
+                         KupljeniTiketiRepo kupljeniTiketiRepo) {
         this.tiketiRepo = tiketiRepo;
         this.smestajRepo = smestajRepo;
         this.usersRepo = usersRepo;
         this.newsletterRepo = newsletterRepo;
+        this.kupljeniTiketiRepo = kupljeniTiketiRepo;
 
         this.storageService = storageService;
         this.mailgunService = mailgunService;
         this.confirmationService = confirmationService;
 
         this.confirmationListener = confirmationListener;
-
-        sessions = new HashMap<>();
-        timeout = new HashMap<>();
     }
 
     // ***** GET ALL ***** \\
@@ -156,10 +146,13 @@ public class ApiController {
 
     @PostMapping("/userLogin")
     public ResponseEntity<?> userLogin(@RequestBody User user_request,
-                          HttpSession session) {
-        if (timeout.containsKey(session)){
-            if (System.currentTimeMillis()-timeout.get(session).getTime()>5000){
-                timeout.remove(session);
+                                       HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty()) ip = request.getRemoteAddr();
+
+        if (TimeoutSessions.isTimedOut(ip)){
+            if (System.currentTimeMillis()-TimeoutSessions.getTimeout(ip).getTime()>5000){
+                TimeoutSessions.removeTimeout(ip);
             }
             else return ResponseEntity.status(429).body("Try again later");
         }
@@ -170,17 +163,17 @@ public class ApiController {
         boolean password_valid = email_valid?UserSecurity.verifyPassword(user.getPassword(), user.getPassword()):false;
 
         if (!email_valid || !password_valid) {
-            if (sessions.containsKey(session)) {
-                if (sessions.get(session) == 3) {
-                    sessions.remove(session);
-                    timeout.put(session, new Timestamp(System.currentTimeMillis()));
+            if (TimeoutSessions.containsSession(ip)) {
+                if (TimeoutSessions.getTries(ip) == 3) {
+                    TimeoutSessions.removeSession(ip);
+                    TimeoutSessions.addTimeout(ip);
 
                     return ResponseEntity.status(429).body("Try again later");
                 }
 
-                sessions.put(session, sessions.get(session)+1);
+                TimeoutSessions.addTry(ip);
             }
-            else sessions.put(session, 1);
+            else TimeoutSessions.addSession(ip);
         }
 
         if (!email_valid) {
@@ -190,14 +183,15 @@ public class ApiController {
         if (!UserSecurity.verifyPassword(user_request.getPassword(), user.getPassword()))
             return ResponseEntity.status(401).body("Wrong password");
 
-        sessions.remove(session);
-        timeout.remove(session);
+        TimeoutSessions.removeSession(ip);
+        TimeoutSessions.removeTimeout(ip);
 
-        String token = JwtUtil.generateToken(user_request.getEmail());
+        // disabled for testing purposes
+        //String token = JwtUtil.generateToken(user_request.getEmail());
 
         UserFD userFD = new UserFD();
         userFD.setUsername(user.getUsername());
-        userFD.setJwtToken(token);
+        //userFD.setJwtToken(token);
 
         return ResponseEntity.ok(userFD);
     }
@@ -319,5 +313,41 @@ public class ApiController {
     @PostMapping("/saSmestaj")
     public ResponseEntity<?> saveAllS(@RequestBody List<Smestaj> smestaji) {
         return ResponseEntity.ok(smestajRepo.saveAll(smestaji));
+    }
+
+    @PostMapping("/soBought")
+    public ResponseEntity<?> saveBought(@RequestBody KupljeniTiketi kupljeni_tiket) {
+        if (kupljeni_tiket == null) return ResponseEntity.badRequest().build();
+        if (kupljeni_tiket.getId_tiket() == null || kupljeni_tiket.getId_user() == null)
+            return ResponseEntity.badRequest().build();
+
+        Optional<Tiket> tkt = tiketiRepo.findFirstById(kupljeni_tiket.getId_tiket());
+        if (tkt.isPresent()) {
+            if (tkt.get().getBroj_tiketa() == 0) return ResponseEntity.status(406).body("No more available tickets");
+        }
+        else return ResponseEntity.status(406).body("No such ticket exists");
+
+        tiketiRepo.buyTiket(kupljeni_tiket.getId_tiket());
+
+        return ResponseEntity.ok(kupljeniTiketiRepo.save(kupljeni_tiket));
+    }
+
+    @PostMapping("/saBought")
+    public ResponseEntity<?> saveAllBought(@RequestBody List<KupljeniTiketi> kupljeni_tiketi) {
+        List<Tiket> tiketi = new ArrayList<>();
+
+        kupljeni_tiketi.forEach(tiket -> {
+            Optional<Tiket> tkt = tiketiRepo.findById(tiket.getId_tiket());
+            if (tkt.isPresent()) {
+                if (tkt.get().getBroj_tiketa() == 0) return;
+            }
+            else return;
+
+            tiketiRepo.buyTiket(tiket.getId_tiket());
+            tiketi.add(tiketiRepo.findById(tiket.getId_tiket()).orElse(new Tiket()));
+            kupljeniTiketiRepo.save(tiket);
+        });
+
+        return ResponseEntity.ok(tiketi);
     }
 }

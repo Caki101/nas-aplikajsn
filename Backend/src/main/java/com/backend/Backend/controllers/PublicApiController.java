@@ -25,6 +25,6 @@ public class PublicApiController {
         if (key_exist) message = "Request verified.";
         else message = "Request expired.";
 
-        response.sendRedirect("/message/?message=" + message);
+        response.sendRedirect("/pages/message?message=" + message);
     }
 }

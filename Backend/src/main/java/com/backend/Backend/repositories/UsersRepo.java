@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UsersRepo extends CrudRepository<User, Long> {
     User findFirstByEmail(String email);
 
+    User findFirstByUsername(String username);
+
     boolean existsUserByEmail(String email);
 
     @Query(nativeQuery = true, value = "UPDATE users SET verified = true WHERE email = ?1")
