@@ -8,7 +8,7 @@ import Settings from '../Settings';
 import '../../styles/Profile.css';
 
 function Profile() {
-  const [selectedComponent, setSelectedComponent] = useState('home');
+  const [selectedComponent, setSelectedComponent] = useState('profile-home');
 
   const handleComponentChange = (component) => {
     setSelectedComponent(component);
@@ -19,7 +19,7 @@ function Profile() {
       <Sidebar onComponentChange={handleComponentChange} />
       <div className="profile-board-content">
         <Content />
-        {selectedComponent === 'profile-home' && <Mainbar />}
+        {selectedComponent === 'profile-home' && <Mainbar onComponentChange={handleComponentChange}/>}
         {selectedComponent === 'profile-reset-password' && <PasswordReset />}
         {selectedComponent === 'profile-your-travels' && <YourTravels />}
         {selectedComponent === 'profile-settings' && <Settings />}

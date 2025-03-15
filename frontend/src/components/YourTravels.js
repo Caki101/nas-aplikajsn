@@ -1,9 +1,88 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import '../styles/Profile.css'
 
 const YourTravels = () => {
-  return (
-    <div>Your Travels</div>
-  )
-}
+  const [travels, setTravels] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const travelsPerPage = 7;
 
-export default YourTravels
+  useEffect(() => {
+    const fetchTravels = async () => {
+      const username = localStorage.getItem("username");
+
+      if (username) {
+        const response = await fetch('http://26.10.184.197:8080/auth/user_travels', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data)
+          setTravels(data);
+        } else {
+          console.error('Failed to fetch', response.statusText)
+        }
+      } else {
+        console.error ('No username in localStorage!')
+      }
+    };
+
+    fetchTravels();
+  }, []);
+
+  const indexOflastTravel = currentPage * travelsPerPage;
+  const indexOfFirstTravel = indexOflastTravel - travelsPerPage;
+  const currentTravels = travels.slice(indexOfFirstTravel, indexOflastTravel);
+
+  const handleNextPage = () => {
+    if (currentPage * travelsPerPage < travels.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+  
+  return (
+    <div className="mainbar">
+      <h2>All your travels!</h2>
+      {currentTravels.length > 0 ? (
+        currentTravels.map((travel, index) => (
+          <div key={index} className="travel-item">
+            <div className="travel-details">
+              <span className="travel-date">{travel.date}</span>
+              <span className="travel-place">{travel.place}</span>
+            </div>
+            <hr className="travel-underline" />
+          </div>
+        ))
+      ) : (
+        <p>No scheduled travels available.</p>
+      )}
+
+      <div className='pagination-buttons'>
+        {currentPage > 1 && (
+          <button onClick={handlePreviousPage} className='page-buttons'>
+            Previous page
+          </button>
+        )}
+        {currentPage * travelsPerPage < travels.length && (
+          <button onClick={handleNextPage} className='page-buttons'>
+            Next page
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default YourTravels;
