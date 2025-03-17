@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Layout</title>
+
+    <link th:href="${link}" rel="stylesheet">
+
+    <link th:if="${css}" th:href="${css}" rel="stylesheet">
+    <script th:if="${js}" th:src="${js}"></script>
+</head>
+<body>
+    <div th:replace="~{${page} :: content}"></div>
+</body>
+</html>

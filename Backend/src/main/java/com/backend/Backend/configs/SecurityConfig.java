@@ -29,12 +29,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests -> {
                     // disabled for testing purposes
+                    // needs to be reorganized
                     //authorizeRequests.requestMatchers("/auth/**").hasAuthority(SecurityData.AUTH_USER);
                     authorizeRequests.requestMatchers("/auth/**").permitAll();
                     authorizeRequests.requestMatchers("/api/**").hasAuthority(SecurityData.API_USER);
                     authorizeRequests.requestMatchers("/public-api/**").permitAll();
                     authorizeRequests.requestMatchers("/pages/**").permitAll();
                     authorizeRequests.requestMatchers("/testing/**").permitAll();
+                    authorizeRequests.requestMatchers("/admin/**").permitAll();
+                    authorizeRequests.requestMatchers("/admin/**").permitAll();
+                    authorizeRequests.requestMatchers("/js/**","/css/**").permitAll();
                     authorizeRequests.anyRequest().authenticated();
                 })
                 .csrf(AbstractHttpConfigurer::disable)

@@ -30,6 +30,34 @@ public class Tiket {
     public Tiket() {
     }
 
+    @Override
+    public String toString() {
+        return "Tiket{" +
+                "id=" + id +
+                ", smestaj=" + smestaj.toString() +
+                ", sezona='" + sezona + '\'' +
+                ", cena=" + cena +
+                ", trajanje_odmora=" + trajanje_odmora +
+                ", broj_osoba=" + broj_osoba +
+                ", broj_tiketa=" + broj_tiketa +
+                ", prevoz='" + prevoz + '\'' +
+                ", polazak=" + polazak +
+                ", version=" + version +
+                '}';
+    }
+
+    public String searchable() {
+        return (id + " " +
+                smestaj.searchable() + " " +
+                sezona + " " +
+                cena + " " +
+                trajanje_odmora + " " +
+                broj_osoba + " " +
+                broj_tiketa + " " +
+                prevoz + " " +
+                polazak).toLowerCase();
+    }
+
     public Long getId() {
         return id;
     }

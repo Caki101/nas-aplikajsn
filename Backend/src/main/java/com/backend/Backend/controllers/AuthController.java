@@ -96,9 +96,13 @@ public class AuthController {
 
         User usr = usersRepo.findFirstByEmail(user.getEmail());
 
+        if (usr == null)
+            return ResponseEntity.status(404).body("User not found.");
+
         // session timeout implementation needed
         if (UserSecurity.verifyPassword(user.getPassword(), usr.getPassword()))
             return ResponseEntity.ok().body("Verified");
-        else return ResponseEntity.badRequest().body("Wrong password.");
+        else
+            return ResponseEntity.status(401).body("Wrong password.");
     }
 }

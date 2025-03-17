@@ -3,6 +3,7 @@ package com.backend.Backend.controllers;
 import com.backend.Backend.comps.ConfirmationListener;
 import com.backend.Backend.dataTypes.*;
 import com.backend.Backend.repositories.*;
+import com.backend.Backend.search.Trie;
 import com.backend.Backend.security.SecurityData;
 import com.backend.Backend.security.TimeoutSessions ;
 import com.backend.Backend.services.ConfirmationService;
@@ -17,6 +18,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -32,6 +34,8 @@ public class ApiController {
     private final ConfirmationService confirmationService;
 
     private final ConfirmationListener  confirmationListener;
+
+    private Trie search_trie;
 
     @Autowired
     public ApiController(TiketiRepo tiketiRepo,
@@ -54,6 +58,25 @@ public class ApiController {
         this.confirmationService = confirmationService;
 
         this.confirmationListener = confirmationListener;
+
+        init();
+    }
+
+    private void init() {
+        search_trie = new Trie();
+
+        tiketiRepo.findAll().forEach(tiket -> {
+            List<String> words = Arrays.stream(tiket.searchable().split(" ")).toList();
+            Trie root = search_trie;
+
+            for(String word : words) {
+                for (char c : word.toCharArray()) {
+                    root = root.getChildren().computeIfAbsent(c, _ -> new Trie());
+                    root.getTiket_ids().add(tiket.getId());
+                }
+                root = search_trie;
+            }
+        });
     }
 
     // ***** GET ALL ***** \\
@@ -68,11 +91,7 @@ public class ApiController {
 
     @GetMapping("/allT")
     public List<Tiket> findAllT() {
-        List<Tiket> tiketi = new ArrayList<>();
-
-        tiketi.addAll(tiketiRepo.findAllAvailable());
-
-        return tiketi;
+        return new ArrayList<>(tiketiRepo.findAllAvailable());
     }
 
     /**
@@ -122,8 +141,6 @@ public class ApiController {
     @ResponseBody
     public ResponseEntity<?> image(@PathVariable String filename) {
         Resource img = storageService.load(filename);
-
-        if (img == null) return ResponseEntity.notFound().build();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
@@ -186,17 +203,30 @@ public class ApiController {
         TimeoutSessions.removeSession(ip);
         TimeoutSessions.removeTimeout(ip);
 
-        // disabled for testing purposes
-        //String token = JwtUtil.generateToken(user_request.getEmail());
-
         UserFD userFD = new UserFD();
         userFD.setUsername(user.getUsername());
+
+        // disabled for testing purposes
+        //String token = JwtUtil.generateToken(user_request.getEmail());
         //userFD.setJwtToken(token);
 
         return ResponseEntity.ok(userFD);
     }
 
+    @GetMapping("/best_offers")
+    public ResponseEntity<?> getBestOffers() {
+        return ResponseEntity.ok(tiketiRepo.findBestOffers());
+    }
+
     // ***** SAVING ENTITIES *****\\
+    /**
+     * Method for saving new user into database and sending an email for verification of identity.
+     *
+     * @param user accepts json object of the same structure as {@link User} class.
+     * @return code 401 if the user by provided email already exists;<br>
+     * code 400 if user didn't verify identity in time;<br>
+     * otherwise 200.
+     */
     @PostMapping("/userSignUp")
     @ResponseBody
     public ResponseEntity<?> userSignUp(@RequestBody User user) {
@@ -268,6 +298,35 @@ public class ApiController {
             else return ResponseEntity.status(404).body("User not found");
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    // ***** SEARCH SUGGESTIONS ***** \\
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam String query) {
+        if (query.isEmpty()) return ResponseEntity.badRequest().body(Collections.emptyList());
+
+        List<String> search_words = Arrays.stream(query.split(" ")).toList();
+
+        Trie root;
+        Set<Long> ids = new HashSet<>();
+
+        for (String word : search_words) {
+            word = word.toLowerCase();
+            root = search_trie;
+
+            for (char c : word.toCharArray()) {
+                root = root.getChildren().get(c);
+                if (root == null) return ResponseEntity.notFound().build();
+            }
+
+            if (ids.isEmpty()){
+                ids.addAll(root.getTiket_ids());
+                continue;
+            }
+            ids = root.getTiket_ids().stream().filter(ids::contains).collect(Collectors.toCollection(HashSet::new));
+        }
+
+        return ResponseEntity.ok(tiketiRepo.findAllByIds(ids));
     }
 
     // ***** UPLOAD FILES ***** \\

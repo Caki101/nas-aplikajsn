@@ -18,6 +18,25 @@ public class Smestaj {
     public Smestaj() {
     }
 
+    @Override
+    public String toString() {
+        return "Smestaj{" +
+                "id=" + id +
+                ", ime_smestaja='" + ime_smestaja + '\'' +
+                ", drzava='" + drzava + '\'' +
+                ", grad='" + grad + '\'' +
+                ", ocena=" + ocena +
+                '}';
+    }
+
+    public String searchable() {
+        return (id + " " +
+                ime_smestaja + " " +
+                drzava + " " +
+                grad + " " +
+                ocena).toLowerCase();
+    }
+
     public Long getId() {
         return id;
     }

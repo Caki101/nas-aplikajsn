@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface TiketiRepo extends CrudRepository<Tiket, Long> {
 
@@ -36,4 +37,10 @@ public interface TiketiRepo extends CrudRepository<Tiket, Long> {
     void buyTiket(@Param("id") Long id);
 
     Optional<Tiket> findFirstById(Long id);
+
+    @Query(nativeQuery = true, value = "select * from bestoffer3()")
+    List<Tiket> findBestOffers();
+
+    @Query(nativeQuery = true, value = "select * from tiketi where id in ?1 and broj_tiketa > 0")
+    List<Tiket> findAllByIds(Set<Long> ids);
 }
