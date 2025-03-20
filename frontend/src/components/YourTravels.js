@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/Profile.css'
+import s from '../styles/Profile.module.css';
 
 const YourTravels = () => {
   const [travels, setTravels] = useState([]);
@@ -29,7 +29,7 @@ const YourTravels = () => {
           console.error('Failed to fetch', response.statusText)
         }
       } else {
-        console.error ('No username in localStorage!')
+        console.error('No username in localStorage!')
       }
     };
 
@@ -51,32 +51,32 @@ const YourTravels = () => {
       setCurrentPage(currentPage - 1);
     }
   }
-  
+
   return (
-    <div className="mainbar">
+    <div className={s["mainbar"]}>
       <h2>All your travels!</h2>
       {currentTravels.length > 0 ? (
         currentTravels.map((travel, index) => (
-          <div key={index} className="travel-item">
-            <div className="travel-details">
-              <span className="travel-date">{travel.date}</span>
-              <span className="travel-place">{travel.place}</span>
+          <div key={index} className={s["travel-item"]}>
+            <div className={s["travel-details"]}>
+              <span className={s["travel-date"]}>{travel.date}</span>
+              <span className={s["travel-place"]}>{travel.place}</span>
             </div>
-            <hr className="travel-underline" />
+            <hr className={s["travel-underline"]} />
           </div>
         ))
       ) : (
         <p>No scheduled travels available.</p>
       )}
 
-      <div className='pagination-buttons'>
+      <div className={s["pagination-buttons"]}>
         {currentPage > 1 && (
-          <button onClick={handlePreviousPage} className='page-buttons'>
+          <button onClick={handlePreviousPage} className={s["page-buttons"]}>
             Previous page
           </button>
         )}
         {currentPage * travelsPerPage < travels.length && (
-          <button onClick={handleNextPage} className='page-buttons'>
+          <button onClick={handleNextPage} className={s["page-buttons"]}>
             Next page
           </button>
         )}

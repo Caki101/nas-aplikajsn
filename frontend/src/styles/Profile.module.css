@@ -152,6 +152,7 @@ h2 {
 }
 
 .travel-details {
+  gap: 20px;
   display: flex;
   justify-content: space-between;
   font-size: 1.1rem;
@@ -163,7 +164,7 @@ h2 {
 
 .travel-place {
   font-style: italic;
-  color: #555;
+  color: #3c3c3c;
 }
 
 .travel-underline {

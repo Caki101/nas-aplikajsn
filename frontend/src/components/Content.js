@@ -1,12 +1,10 @@
 import React from 'react'
 import ContentHeader from './ContentHeader'
-import '../styles/Content.css'
-
-
+import s from '../styles/Content.module.css';
 
 const Content = () => {
   return (
-    <div className='content'>
+    <div className={s["content"]}>
       <ContentHeader />
     </div>
   )

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import s from '../styles/Profile.module.css';
 
 const PasswordReset = () => {
   const [email, setEmail] = useState('');
@@ -18,25 +19,25 @@ const PasswordReset = () => {
       });
 
       if (response.ok) {
-        setVerificationMessage('Verification sent to email.')
+        setVerificationMessage('Verification sent to email.');
       } else {
-        setVerificationMessage('Wrong password')
+        setVerificationMessage('Wrong password');
       }
     } catch (error) {
-      setVerificationMessage('Error')
+      setVerificationMessage('Error');
     }
   };
 
   return (
-    <div className="password-reset-page">
-      <div className="password-reset-container">
-        <div className="password-reset-header">
+    <div className={s["password-reset-page"]}>
+      <div className={s["password-reset-container"]}>
+        <div className={s["password-reset-header"]}>
           <h2>Reset Password</h2>
-          <div className="underline"></div>
+          <div className={s["underline"]}></div>
         </div>
 
-        <div className="password-reset-inputs">
-          <div className="password-reset-input">
+        <div className={s["password-reset-inputs"]}>
+          <div className={s["password-reset-input"]}>
             <i className="fa fa-envelope"></i>
             <input
               type="email"
@@ -46,7 +47,7 @@ const PasswordReset = () => {
               required
             />
           </div>
-          <div className="password-reset-input">
+          <div className={s["password-reset-input"]}>
             <i className="fa fa-lock"></i>
             <input
               type="password"
@@ -57,12 +58,14 @@ const PasswordReset = () => {
             />
           </div>
           {verificationMessage && (
-            <div className='verification-message'>{verificationMessage}</div>
+            <div className={s["verification-message"]}>{verificationMessage}</div>
           )}
         </div>
 
-        <div className="password-reset-submit-container">
-          <button type="submit" className="password-reset-submit" onClick={handleSubmit}>Reset Password</button>
+        <div className={s["password-reset-submit-container"]}>
+          <button type="submit" className={s["password-reset-submit"]} onClick={handleSubmit}>
+            Reset Password
+          </button>
         </div>
       </div>
     </div>

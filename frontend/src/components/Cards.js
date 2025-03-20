@@ -1,46 +1,38 @@
-import React from 'react'
+import React, { useState } from 'react'
 import CardItem from './CardItem'
+import CardsData from './GettingData/CardsData'
 import '../styles/Cards.css'
 
 function Cards() {
+    const [data, setData] = useState([]);
+
     return (
         <div className='cards'>
+            <CardsData setData={setData} />
             <h1>Najbolje destinacije</h1>
             <div className="cards_container">
                 <div className="cards_wrapper">
                     <ul className="cards_items">
-                        <CardItem
-                        src="images/img-1.jpg"
-                        text="////"
-                        label="Beach 1"
-                        path='/dataDisplay'
-                        />
-                        <CardItem
-                        src="images/img-4.jpg"
-                        text="////"
-                        label="Beach 2"
-                        path='/dataDisplay'
-                        />
+                        {data.slice(0,2).map((item, index) => (
+                            <CardItem
+                                key={index}
+                                src={item.img_link}
+                                text={item.description}
+                                label={item.label}
+                                path={'/destination/'+item.id}
+                            />
+                        ))}
                     </ul>
                     <ul className="cards_items">
-                        <CardItem
-                        src="images/img-5.jpg"
-                        text="////"
-                        label="Beach 1"
-                        path='/dataDisplay'
-                        />
-                        <CardItem
-                        src="images/img-6.jpg"
-                        text="////"
-                        label="Beach 2"
-                        path='/dataDisplay'
-                        />
-                        <CardItem
-                        src="images/img-7.jpg"
-                        text="////"
-                        label="Beach 2"
-                        path='/dataDisplay'
-                        />
+                        {data.slice(2,5).map((item, index) => (
+                            <CardItem
+                                key={index+2}
+                                src={item.img_link}
+                                text={item.description}
+                                label={item.label}
+                                path={'/destination/'+item.id}
+                            />
+                        ))}
                     </ul>
                 </div>
             </div>  

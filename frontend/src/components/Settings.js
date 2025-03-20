@@ -1,8 +1,9 @@
 import React from 'react'
+import s from '../styles/Profile.module.css';
 
 const Settings = () => {
   return (
-    <div>Settings</div>
+    <div className={s['mainbar']}>Settings</div>
   )
 }
 

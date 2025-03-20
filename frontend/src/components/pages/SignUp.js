@@ -58,8 +58,10 @@ const SignUp = () => {
             setSuccessMessage(result.message);
 
             const userInfo = result.username || username;
+            const userEmail = result.email || email
             localStorage.setItem('authToken', result.jwtToken);
             localStorage.setItem('username', userInfo);
+            localStorage.setItem('email', userEmail)
             window.dispatchEvent(new Event("storage"));
             navigate('/Profile');
 

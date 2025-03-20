@@ -1,0 +1,71 @@
+.destination-container {
+    background: #e5bfbf;
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.travel-container {
+    background: #fff;
+    width: 50%;
+    max-width: 800px;
+    min-width: 300px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.travel-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    background: #f5a623;
+    color: white;
+}
+
+.travel-btn:hover {
+    background: #e5941d;
+}
+
+.dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    list-style: none;
+    padding: 10px 0;
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+    background: #f0f0f0;
+}

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/Profile.css';
+import s from '../styles/Profile.module.css';
 
 const Mainbar = ({ onComponentChange }) => {
   const [scheduledTravels, setScheduledTravels] = useState(0);
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const fetchScheduledTravels = async () => {
@@ -19,16 +20,23 @@ const Mainbar = ({ onComponentChange }) => {
     fetchScheduledTravels();
   }, []);
 
+  useEffect(() => {
+      const storedEmail = localStorage.getItem('email');
+      if (storedEmail) {
+          setEmail(storedEmail);
+      }
+  }, []);
+
   return (
-    <div className="mainbar">
+    <div className={s["mainbar"]}>
       <h2>Profile Information</h2>
-      <div className="info-item">
+      <div className={s["info-item"]}>
         <label htmlFor="email">Email:</label>
-        <input type="email" id="email" value="randomemail@example.com" disabled readOnly />
+        <input type="email" id="email" value={email} disabled readOnly />
       </div>
-      <p className="scheduled-text">
+      <p className={s["scheduled-text"]}>
         You have <strong>{scheduledTravels}</strong> scheduled travels. To check them out, click
-        <span onClick={() => onComponentChange('profile-your-travels')} className="item"> here!</span>
+        <span onClick={() => onComponentChange('profile-your-travels')} className={s["item"]}> here!</span>
       </p>
     </div>
   );
