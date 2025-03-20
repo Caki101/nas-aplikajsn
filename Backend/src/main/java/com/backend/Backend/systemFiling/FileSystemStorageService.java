@@ -55,7 +55,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public Resource loadFirst(Integer id) {
+    public Resource loadFirst(Long id) {
         Resource resource;
 
         try (Stream<Path> paths = Files.walk(rootLocation)) {
@@ -79,7 +79,7 @@ public class FileSystemStorageService implements StorageService {
      * @return List of all filenames with param id as prefix
      */
     @Override
-    public List<String> getAllFilenames(Integer id) {
+    public List<String> getAllFilenames(Long id) {
         List<String> filenames = new ArrayList<>();
 
         try (Stream<Path> files = Files.walk(rootLocation)) {
@@ -100,7 +100,7 @@ public class FileSystemStorageService implements StorageService {
      * @return Saved file name.
      */
     @Override
-    public String store(MultipartFile file, int id) {
+    public String store(MultipartFile file, Long id) {
         String file_name;
         try {
             if (file.isEmpty()) {
@@ -147,7 +147,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void deleteAll(Integer id) {
+    public void deleteAll(Long id) {
 
     }
 }

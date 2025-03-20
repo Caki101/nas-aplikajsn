@@ -10,6 +10,12 @@
     <script th:if="${js}" th:src="${js}"></script>
 </head>
 <body>
-    <div th:replace="~{${page} :: content}"></div>
+    <div class="top-div">
+        <h1>Admin page</h1>
+    </div>
+    <div class="content-div">
+        <div class="side-menu"></div>
+        <div th:replace="~{${page} :: content}"></div>
+    </div>
 </body>
 </html>

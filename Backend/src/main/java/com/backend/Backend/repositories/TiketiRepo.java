@@ -38,8 +38,8 @@ public interface TiketiRepo extends CrudRepository<Tiket, Long> {
 
     Optional<Tiket> findFirstById(Long id);
 
-    @Query(nativeQuery = true, value = "select * from bestoffer3()")
-    List<Tiket> findBestOffers();
+    @Query(nativeQuery = true, value = "select * from bestoffers(?1)")
+    List<Tiket> findBestOffers(@Param("limitt") Integer limitt);
 
     @Query(nativeQuery = true, value = "select * from tiketi where id in ?1 and broj_tiketa > 0")
     List<Tiket> findAllByIds(Set<Long> ids);

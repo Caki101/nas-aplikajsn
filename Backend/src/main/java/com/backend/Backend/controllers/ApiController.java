@@ -17,6 +17,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -101,7 +102,7 @@ public class ApiController {
      * @return array of file names for images of given Smestaj
      */
     @GetMapping("/images_{smestaj_id}")
-    public ResponseEntity<?> images(@PathVariable int smestaj_id) {
+    public ResponseEntity<?> images(@PathVariable Long smestaj_id) {
         return ResponseEntity.ok(storageService.getAllFilenames(smestaj_id));
     }
 
@@ -141,19 +142,6 @@ public class ApiController {
     @ResponseBody
     public ResponseEntity<?> image(@PathVariable String filename) {
         Resource img = storageService.load(filename);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-
-        return new ResponseEntity<>(img, headers, HttpStatus.OK);
-    }
-
-    @GetMapping("/first_image_{smestaj_id}")
-    @ResponseBody
-    public ResponseEntity<?> firstImage(@PathVariable Integer smestaj_id) {
-        Resource img = storageService.loadFirst(smestaj_id);
-
-        if (img == null) return ResponseEntity.notFound().build();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
@@ -215,7 +203,47 @@ public class ApiController {
 
     @GetMapping("/best_offers")
     public ResponseEntity<?> getBestOffers() {
-        return ResponseEntity.ok(tiketiRepo.findBestOffers());
+        List<Tiket> best_offers = tiketiRepo.findBestOffers(5);
+        List<BestOffer> bos = new ArrayList<>();
+
+        for (Tiket tiket : best_offers) {
+            bos.add(new BestOffer(
+                    tiket.getSmestaj().getDrzava(),
+                    tiket.getSmestaj().getIme_smestaja(),
+                    "http://" + SecurityData.ORIGIN + "/public-api/first_image_" + tiket.getSmestaj().getId()
+                ));
+        }
+
+        return ResponseEntity.ok().body(bos);
+    }
+
+    @GetMapping("/destinations")
+    public ResponseEntity<?> getDestinations() {
+        Map<String, Map<String, List<String>>> destinations = new HashMap<>();
+
+        Iterable<Tiket> tiketi = tiketiRepo.findAll();
+
+        tiketi.forEach(tiket -> {
+            destinations.computeIfAbsent(tiket
+                            .getSmestaj()
+                            .getDrzava(), _ -> new HashMap<>());
+
+            destinations.get(tiket
+                            .getSmestaj()
+                            .getDrzava())
+                    .computeIfAbsent(tiket
+                            .getSmestaj()
+                            .getGrad(), _ -> new ArrayList<>());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+            destinations.get(tiket
+                        .getSmestaj()
+                        .getDrzava())
+                    .get(tiket.getSmestaj().getGrad())
+                        .add(sdf.format(tiket.getPolazak()));
+        });
+
+        return ResponseEntity.ok(destinations);
     }
 
     // ***** SAVING ENTITIES *****\\
@@ -407,6 +435,19 @@ public class ApiController {
             kupljeniTiketiRepo.save(tiket);
         });
 
+        return ResponseEntity.ok(tiketi);
+    }
+
+    @PostMapping("/satddso") // save all tiket developer data saving objects
+    public ResponseEntity<?> satddso(@RequestBody List<TiketDDSO> tiketDDSO) {
+        List<Tiket> tiketi = new ArrayList<>();
+        tiketDDSO.forEach(tiket -> {
+            Smestaj smestaj = smestajRepo.saveIfNotExists(tiket.getSmestaj());
+            tiket.setSmestaj(smestaj);
+            Tiket tkt = new Tiket(tiket);
+            tiketiRepo.save(tkt);
+            tiketi.add(tkt);
+        });
         return ResponseEntity.ok(tiketi);
     }
 }
