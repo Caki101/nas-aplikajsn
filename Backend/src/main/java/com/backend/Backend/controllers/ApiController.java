@@ -277,7 +277,8 @@ public class ApiController {
                         + SecurityData.ORIGIN
                         + "/public-api/verify_account/"
                         + token
-                        + "'>verify your account here</a></div>"
+                        + "'>verify your account here</a></div>",
+                "info"
         );
 
         boolean confirmed = confirmationListener.waitForConfirmation(token,60_000);
@@ -318,7 +319,8 @@ public class ApiController {
                                 + token
                                 + "?email="
                                 + user.getEmail()
-                                + "'>Reset password</a>"
+                                + "'>Reset password</a>",
+                        "info"
                 );
 
                 return ResponseEntity.ok().build();
@@ -449,5 +451,36 @@ public class ApiController {
             tiketi.add(tkt);
         });
         return ResponseEntity.ok(tiketi);
+    }
+
+    @PostMapping("/promote")
+    public ResponseEntity<?> promote(@RequestBody User user, HttpServletRequest request) {
+        ResponseEntity<?> response = userLogin(user, request);
+        if (response.getStatusCode().is4xxClientError()) return response;
+        user = usersRepo.findFirstByEmail(user.getEmail());
+
+        boolean inserted = usersRepo.promote(user.getId());
+        if (!inserted) return ResponseEntity.ok("User is already admin");
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/admin_login")
+    public ResponseEntity<?> adminLogin(@RequestBody User user, HttpServletRequest request) {
+        User usr = usersRepo.findFirstByUsername(user.getUsername());
+        if (usr == null) return ResponseEntity.notFound().build();
+        usr .setPassword(user.getPassword());
+
+        ResponseEntity<?> response = userLogin(usr, request);
+        if (response.getStatusCode().is4xxClientError()) return response;
+
+        if (usersRepo.checkAdmin(usr.getId())) return ResponseEntity.ok().build();
+
+        return ResponseEntity.status(401).build();
+    }
+
+    @GetMapping("/admin/allS")
+    public ResponseEntity<?> adminAllS(@RequestParam(defaultValue = "0") Integer offset) {
+        return ResponseEntity.ok(smestajRepo.getAdminAllS(10,offset));
     }
 }

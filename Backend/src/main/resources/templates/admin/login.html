@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link th:href="${link}" rel="stylesheet">
+    <script th:src="${src}"></script>
+</head>
+<body>
+    <div class="main">
+        <div class="login-form">
+            <h2>Login</h2>
+            <div class="wrapper">
+                <label>
+                    Username:
+                    <input id="username" placeholder="username..">
+                </label>
+
+                <label>
+                    Password:
+                    <input id="password" placeholder="password..">
+                </label>
+
+                <button onclick="submitForm()" id="submit" type="submit">Login</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

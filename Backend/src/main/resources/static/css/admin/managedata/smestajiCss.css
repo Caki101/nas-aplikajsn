@@ -1,0 +1,26 @@
+.table-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    overflow-x: auto;
+}
+
+.table-row li {
+    border: 1px solid black;
+}
+
+.active-page {
+    font-weight: bold;
+}
+
+.table-nav {
+    display: flex;
+}
+
+#pages {
+    display: flex;
+}
+
+#pages div + div {
+    margin-left: 2em;
+}

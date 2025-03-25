@@ -37,7 +37,6 @@ public class SecurityConfig {
                     authorizeRequests.requestMatchers("/pages/**").permitAll();
                     authorizeRequests.requestMatchers("/testing/**").permitAll();
                     authorizeRequests.requestMatchers("/admin/**").permitAll();
-                    authorizeRequests.requestMatchers("/admin/**").permitAll();
                     authorizeRequests.requestMatchers("/js/**","/css/**").permitAll();
                     authorizeRequests.anyRequest().authenticated();
                 })

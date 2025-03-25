@@ -4,18 +4,38 @@
     <meta charset="UTF-8">
     <title>Layout</title>
 
-    <link th:href="${link}" rel="stylesheet">
+    <link href="http://localhost:8080/css/admin/layoutCss.css" rel="stylesheet">
+    <script src="http://localhost:8080/js/admin/layoutJs.js"></script>
 
     <link th:if="${css}" th:href="${css}" rel="stylesheet">
     <script th:if="${js}" th:src="${js}"></script>
 </head>
 <body>
-    <div class="top-div">
-        <h1>Admin page</h1>
+    <div class="top-wrapper">
+        <div class="top-div">
+            <h1>Admin page</h1>
+            <button onclick="logout()">Logout</button>
+        </div>
     </div>
     <div class="content-div">
-        <div class="side-menu"></div>
-        <div th:replace="~{${page} :: content}"></div>
+        <div class="side-menu">
+            <ul>
+                <li>
+                    <a id="dashboard" class="menu-button page-link">Dashboard</a>
+                </li>
+                <li>
+                    <div id="manage_data-menu">
+                        <a id="manage_data" class="menu-button menu-opener">Manage Data</a>
+                        <div>
+                            <a id="manage_data/korisnici" class="secondary-btn page-link">Korisnici</a>
+                            <a id="manage_data/smestaji" class="secondary-btn page-link">Smestaji</a>
+                            <a id="manage_data/tiketi" class="secondary-btn page-link">Tiketi</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div th:replace="~{${page} :: content}" class="cd"></div>
     </div>
 </body>
 </html>

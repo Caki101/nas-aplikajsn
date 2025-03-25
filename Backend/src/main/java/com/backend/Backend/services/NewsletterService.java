@@ -37,7 +37,8 @@ public class NewsletterService {
             mailgunService.sendEmail(
                 ns.getEmail(),
                 "Monthly Newsletter Best Offer",
-                "<div><a href='http://" + SecurityData.FRONTEND_ORIGIN + "/tiket/" + tiket.getId() + "'></a></div>"
+                "<div><a href='http://" + SecurityData.FRONTEND_ORIGIN + "/tiket/" + tiket.getId() + "'></a></div>",
+                    "newsletter"
             )
         );
     }

@@ -1,17 +1,20 @@
 package com.backend.Backend.security;
 
+import org.springframework.scheduling.annotation.Scheduled;
+
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-
-/*
-* NEEDS MAP ITEMS TO TIME OUT AFTER CERTAIN AMOUNT OF TIME
-* so it doesn't stay in the Map if it's not going to be accessed again
-*/
+import java.util.concurrent.TimeUnit;
 
 public class TimeoutSessions {
     static Map<String, Integer> sessions =  new HashMap<>();
     static Map<String, Timestamp> timeout = new HashMap<>();
+
+    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+    public void timeoutMapItems() {
+        // timeout after certain amount of time anyway
+    }
 
     public static void addSession(String ip) {
         sessions.put(ip, 1);

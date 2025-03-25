@@ -1,7 +1,99 @@
 body {
     margin: 0;
-    display: grid;
     height: 100vh;
     width: 100vw;
-    column-count: 2;
+    font-family: monospace;
+    font-size: 1.1em;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+h1 {
+    margin: 0;
+}
+
+.top-wrapper {
+    height: 5.5em;
+    position: fixed;
+    width: 100%;
+    background-color: rgb(50, 50, 50);
+    color: white;
+}
+
+.top-div {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: space-between;
+    margin: 0 2em;
+}
+
+#manage_data-menu {
+    overflow: hidden;
+    height: 9vh;
+}
+
+#manage_data-menu.open {
+    height: auto;
+}
+
+.menu-button {
+    font-weight: bold;
+    padding: 0 0 0 0.5em;
+    text-decoration: none;
+    height: 9vh;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 300ms ease;
+    user-select: none;
+}
+
+.menu-button:hover {
+    background-color: lightgray;
+}
+
+.menu-button.active {
+    background-color: lightgray;
+}
+
+.secondary-btn {
+    height: 2.5em;
+    font-size: 1.1em;
+    padding-left: 1em;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    cursor: pointer;
+}
+
+.secondary-btn:hover {
+    background-color: lightgray;
+}
+
+.secondary-btn.active {
+    background-color: lightgray;
+}
+
+.content-div {
+    display: grid;
+    grid-template-columns: 15em auto;
+    height: calc(100% - 5.5em);
+    padding-top: 5.5em;
+}
+
+.side-menu {
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid rgb(50, 50, 50);
+}
+
+.cd {
+    grid-column: 2;
 }

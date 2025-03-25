@@ -11,7 +11,7 @@ public class MailgunService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Async
-    public void sendEmail(String toEmail, String subject, String content) {
+    public void sendEmail(String toEmail, String subject, String content, String type_of_email) {
         // temp fix
         if (!toEmail.contains("@")) return;
 
@@ -21,7 +21,10 @@ public class MailgunService {
         headers.setBasicAuth("api", SecurityData.MAILGUN_API);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        String body = "from=newsletter@" + SecurityData.MAILGUN_DOMAIN
+        String body = "from="
+                + type_of_email
+                + "@"
+                + SecurityData.MAILGUN_DOMAIN
                 + "&to=" + toEmail
                 + "&subject=" + subject
                 + "&html=" + content;

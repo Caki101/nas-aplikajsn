@@ -18,4 +18,10 @@ public interface UsersRepo extends CrudRepository<User, Long> {
     @Modifying
     @Transactional
     void verified(@Param("email") String email);
+
+    @Query(nativeQuery = true, value = "select * from insert_admin(?1)")
+    boolean promote(@Param("user_id") Long user_id);
+
+    @Query(nativeQuery = true, value = "select exists (select 1 from admins where user_id = ?1)")
+    Boolean checkAdmin(@Param("user_id") Long user_id);
 }
