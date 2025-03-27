@@ -83,16 +83,25 @@ public class ApiController {
     // ***** GET ALL ***** \\
     @GetMapping("/allS")
     public List<Smestaj> findAllS() {
-        List<Smestaj> smestaj = new ArrayList<>();
+        List<Smestaj> smestaji = new ArrayList<>();
 
-        smestajRepo.findAll().forEach(smestaj::add);
+        smestajRepo.findAll().forEach(smestaji::add);
 
-        return smestaj;
+        return smestaji;
     }
 
     @GetMapping("/allT")
     public List<Tiket> findAllT() {
         return new ArrayList<>(tiketiRepo.findAllAvailable());
+    }
+
+    @GetMapping("/allU")
+    public List<User> findAllU() {
+        List<User> users = new ArrayList<>();
+
+        usersRepo.findAll().forEach(users::add);
+
+        return users;
     }
 
     /**
@@ -479,8 +488,26 @@ public class ApiController {
         return ResponseEntity.status(401).build();
     }
 
-    @GetMapping("/admin/allS")
-    public ResponseEntity<?> adminAllS(@RequestParam(defaultValue = "0") Integer offset) {
-        return ResponseEntity.ok(smestajRepo.getAdminAllS(10,offset));
+    @GetMapping("/admin/all{table}")
+    public ResponseEntity<?> adminAllS(@PathVariable(name = "table") String table,
+                                       @RequestParam(defaultValue = "0") Integer offset,
+                                       @RequestParam(defaultValue = "id") String filter,
+                                       @RequestParam(defaultValue = "asc") String asc_desc) {
+        List<?> return_array;
+        switch (table) {
+            case "S":
+                return_array = smestajRepo.getAdminAll(10,offset,filter,asc_desc);
+                break;
+            case "U":
+                return_array = usersRepo.getAdminAll(10,offset,filter,asc_desc);
+                break;
+            case "T":
+                return_array = tiketiRepo.getAdminAll(10,offset,filter,asc_desc);
+                break;
+            default:
+                return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok(return_array);
     }
 }

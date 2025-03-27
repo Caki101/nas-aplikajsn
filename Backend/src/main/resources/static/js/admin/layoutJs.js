@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         // jwt token check
     }
 
+    document.querySelector("#logout").addEventListener("click", () => logout());
+
     setActiveButton();
 
     document.querySelectorAll(".page-link").forEach(

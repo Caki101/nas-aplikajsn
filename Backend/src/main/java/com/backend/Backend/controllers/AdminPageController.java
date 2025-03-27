@@ -9,44 +9,60 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/admin")
 public class AdminPageController {
-    final String origin = "http://"+SecurityData.ORIGIN;
+    final String ORIGIN = "http://"+SecurityData.ORIGIN;
 
+    public Model addStatic(Model model) {
+        model.addAttribute("static_css",ORIGIN + "/css/admin/layoutCss.css");
+        model.addAttribute("static_js",ORIGIN + "/js/admin/layoutJs.js");
+        return model;
+    }
+    
     @GetMapping("")
     public String adminLogin(Model model) {
-        model.addAttribute("link", origin+"/css/admin/loginCss.css");
-        model.addAttribute("src", origin+"/js/admin/loginJs.js");
+        model.addAttribute("link", ORIGIN+"/css/admin/loginCss.css");
+        model.addAttribute("src", ORIGIN+"/js/admin/loginJs.js");
         return "admin/login";
     }
 
     @GetMapping("/")
     public String adminPage(Model model) {
-        model.addAttribute("css", origin+"/css/admin/dashboardCss.css");
-        model.addAttribute("js", origin+"/js/admin/dashboardJs.js");
+        model = addStatic(model);
+        model.addAttribute("css", ORIGIN+"/css/admin/dashboardCss.css");
+        model.addAttribute("js", ORIGIN+"/js/admin/dashboardJs.js");
         model.addAttribute("page", "admin/dashboard");
         return "admin/layout";
     }
 
     @GetMapping("/manage_data/korisnici")
     public String manageDataKorisnici(Model model) {
-        model.addAttribute("css", origin+"/css/admin/manageData/korisniciCss.css");
-        model.addAttribute("js", origin+"/js/admin/manageData/korisniciJs.js");
+        model = addStatic(model);
+        model.addAttribute("css", ORIGIN+"/css/admin/manageData/korisniciCss.css");
+        model.addAttribute("js", ORIGIN+"/js/admin/manageData/korisniciJs.js");
         model.addAttribute("page", "admin/manageData/korisnici");
+        model.addAttribute("global_css", ORIGIN + "/css/admin/manageData/manageDataCss.css");
+        model.addAttribute("global_methods", ORIGIN + "/js/admin/manageData/manageDataJs.js");
         return "admin/layout";
     }
 
     @GetMapping("/manage_data/smestaji")
     public String manageDataSmestaji(Model model) {
-        model.addAttribute("css", origin+"/css/admin/manageData/smestajiCss.css");
-        model.addAttribute("js", origin+"/js/admin/manageData/smestajiJs.js");
+        model = addStatic(model);
+        model.addAttribute("css", ORIGIN+"/css/admin/manageData/smestajiCss.css");
+        model.addAttribute("js", ORIGIN+"/js/admin/manageData/smestajiJs.js");
         model.addAttribute("page", "admin/manageData/smestaji");
+        model.addAttribute("global_css", ORIGIN + "/css/admin/manageData/manageDataCss.css");
+        model.addAttribute("global_methods", ORIGIN + "/js/admin/manageData/manageDataJs.js");
         return "admin/layout";
     }
 
     @GetMapping("/manage_data/tiketi")
     public String manageDataTiketi(Model model) {
-        model.addAttribute("css", origin+"/css/admin/manageData/tiketiCss.css");
-        model.addAttribute("js", origin+"/js/admin/manageData/tiketiJs.js");
+        model = addStatic(model);
+        model.addAttribute("css", ORIGIN+"/css/admin/manageData/tiketiCss.css");
+        model.addAttribute("js", ORIGIN+"/js/admin/manageData/tiketiJs.js");
         model.addAttribute("page", "admin/manageData/tiketi");
+        model.addAttribute("global_css", ORIGIN + "/css/admin/manageData/manageDataCss.css");
+        model.addAttribute("global_methods", ORIGIN + "/js/admin/manageData/manageDataJs.js");
         return "admin/layout";
     }
 }

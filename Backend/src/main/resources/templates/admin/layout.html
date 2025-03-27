@@ -4,17 +4,20 @@
     <meta charset="UTF-8">
     <title>Layout</title>
 
-    <link href="http://localhost:8080/css/admin/layoutCss.css" rel="stylesheet">
-    <script src="http://localhost:8080/js/admin/layoutJs.js"></script>
+    <link th:if="static_css" th:href="${static_css}" rel="stylesheet">
+    <script th:if="static_js" th:src="${static_js}"></script>
+
+    <link th:if="global_css" th:href="${global_css}" rel="stylesheet">
+    <script type="module" th:if="global_methods" th:src="${global_methods}"></script>
 
     <link th:if="${css}" th:href="${css}" rel="stylesheet">
-    <script th:if="${js}" th:src="${js}"></script>
+    <script type="module" th:if="${js}" th:src="${js}"></script>
 </head>
 <body>
     <div class="top-wrapper">
         <div class="top-div">
             <h1>Admin page</h1>
-            <button onclick="logout()">Logout</button>
+            <button id="logout">Logout</button>
         </div>
     </div>
     <div class="content-div">

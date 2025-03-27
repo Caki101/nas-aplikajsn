@@ -13,6 +13,9 @@ public interface SmestajRepo extends CrudRepository<Smestaj, Long> {
             nativeQuery = true)
     Smestaj saveIfNotExists(@Param("smestaj") Smestaj smestaj);
 
-    @Query(nativeQuery = true, value = "select * from smestaj order by ime_smestaja limit ?1 offset 10*?2")
-    List<Smestaj> getAdminAllS(Integer limit, Integer offset);
+    @Query(nativeQuery = true, value = "select * from filtered_admin_getS(?1,?2,?3,?4)")
+    List<Smestaj> getAdminAll(@Param("limit") Integer limit,
+                              @Param("offset") Integer offset,
+                              @Param("filter") String filter,
+                              @Param("asc_desc") String asc_desc);
 }

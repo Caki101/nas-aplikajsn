@@ -1,10 +1,12 @@
 <div th:fragment="content" class="cd">
+    <h1>Smestaji tab</h1>
+    <div id="filter-div">
+    </div>
     <ul id="table"></ul>
     <div class="table-nav">
-        <button onclick="changePage(false)"><</button>
+        <button id="previous-page"><</button>
         <div id="pages">
-
         </div>
-        <button onclick="changePage(true)">></button>
+        <button id="next-page">></button>
     </div>
 </div>

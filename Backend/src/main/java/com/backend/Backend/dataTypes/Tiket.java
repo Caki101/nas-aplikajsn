@@ -1,5 +1,6 @@
 package com.backend.Backend.dataTypes;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -22,6 +23,8 @@ public class Tiket {
     private Integer broj_osoba;
     private Integer broj_tiketa;
     private String prevoz;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy HH:mm:ss", timezone = "UTC")
     private Timestamp polazak;
 
     @org.springframework.data.annotation.Version

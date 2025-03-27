@@ -2,6 +2,11 @@ import { API_KEY } from '../config.js';
 
 // need implementation for checking with jwt token if admin is logged in and if token is still valid
 
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector("#submit")
+        .addEventListener('click', _ => submitForm());
+});
+
 async function submitForm() {
     const username = document.querySelector("#username").value;
     const password = document.querySelector("#password").value;

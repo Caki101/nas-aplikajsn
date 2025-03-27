@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="../css/messageCss.css">
+    <link rel="stylesheet" th:if="css" th:href="${css}">
     <script>
         setTimeout(function() {
             window.close();

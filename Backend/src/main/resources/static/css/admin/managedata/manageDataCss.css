@@ -1,0 +1,57 @@
+.active-filter {
+    font-weight: bold;
+}
+
+#table {
+    background-color: aliceblue;
+    width: 90%;
+    justify-self: center;
+}
+
+.table-row {
+    height: 3em;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    overflow-x: auto;
+}
+
+.table-row > li {
+    align-content: center;
+    padding-left: 0.5em;
+}
+
+#table-headers {
+    font-weight: bold;
+}
+
+.table-row li {
+    border: 1px solid black;
+}
+
+.active-page {
+    font-weight: bold;
+}
+
+.table-nav {
+    display: flex;
+    justify-self: center;
+}
+
+.entity-attribute {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+
+#pages {
+    display: flex;
+}
+
+#pages div + div, #pages div:first-of-type {
+    margin-left: 2em;
+}
+
+#pages div:last-of-type {
+    margin-right: 2em;
+}
