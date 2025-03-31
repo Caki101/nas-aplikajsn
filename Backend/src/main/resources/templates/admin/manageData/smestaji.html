@@ -1,12 +1,35 @@
 <div th:fragment="content" class="cd">
     <h1>Smestaji tab</h1>
-    <div id="filter-div">
-    </div>
-    <ul id="table"></ul>
-    <div class="table-nav">
-        <button id="previous-page"><</button>
-        <div id="pages">
+    <div class="segment create-div">
+        <div class="top-of-div">
+            <h2>Create</h2>
+            <button class="help-btn" id="create-help">?</button>
         </div>
-        <button id="next-page">></button>
+        <div class="create-btns">
+            <button id="input-btn">Add Tiket</button>
+        </div>
+        <div class="add-entity-div hidden">
+            <h2>Add Smestaj</h2>
+            <button class="exit-btn" id="exit-adding">X</button>
+        </div>
+    </div>
+    <div class="segment table-div">
+        <div class="top-of-div">
+            <h2 id="table-div-header">Table</h2>
+            <button class="help-btn" id="table-help">?</button>
+        </div>
+        <div id="filter-div">
+            <label for="by-column-filter">
+                Order by:
+                <select id="by-column-filter"></select>
+            </label>
+        </div>
+        <table id="table"></table>
+        <div class="table-nav">
+            <button id="previous-page"><</button>
+            <div id="pages">
+            </div>
+            <button id="next-page">></button>
+        </div>
     </div>
 </div>

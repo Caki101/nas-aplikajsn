@@ -5,11 +5,20 @@ import { API_KEY } from '../config.js';
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector("#submit")
         .addEventListener('click', _ => submitForm());
+    document.addEventListener('keyup', e => {
+        e.preventDefault();
+        if (e.code === "Enter") submitForm().finally();
+    });
 });
 
 async function submitForm() {
     const username = document.querySelector("#username").value;
     const password = document.querySelector("#password").value;
+
+    if (!username || !password) {
+        // error display
+        return;
+    }
 
     const response = await fetch("http://localhost:8080/api/admin_login", {
         method: "POST",

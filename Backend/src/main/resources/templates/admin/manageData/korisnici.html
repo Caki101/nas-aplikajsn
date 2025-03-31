@@ -1,12 +1,19 @@
 <div th:fragment="content" class="cd">
   <h1>Korisnici tab</h1>
-  <div id="filter-div">
-  </div>
-  <ul id="table"></ul>
-  <div class="table-nav">
-    <button id="previous-page"><</button>
-    <div id="pages">
+  <div class="segment table-div">
+    <h2 id="table-div-header">Table</h2>
+    <div id="filter-div">
+      <label for="by-column-filter">
+        Order by:
+        <select id="by-column-filter"></select>
+      </label>
     </div>
-    <button id="next-page">></button>
+    <table id="table"></table>
+    <div class="table-nav">
+      <button id="previous-page"><</button>
+      <div id="pages">
+      </div>
+      <button id="next-page">></button>
+    </div>
   </div>
 </div>
