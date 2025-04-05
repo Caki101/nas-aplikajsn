@@ -2,6 +2,8 @@ package com.backend.Backend.repositories;
 
 import com.backend.Backend.dataTypes.Tiket;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -44,9 +46,9 @@ public interface TiketiRepo extends CrudRepository<Tiket, Long> {
     @Query(nativeQuery = true, value = "select * from tiketi where id in ?1 and broj_tiketa > 0")
     List<Tiket> findAllByIds(Set<Long> ids);
 
-    @Query(nativeQuery = true, value = "select * from filtered_admin_getT(?1,?2,?3,?4)")
-    List<Tiket> getAdminAll(@Param("limit") Integer limit,
-                              @Param("offset") Integer offset,
-                              @Param("filter") String filter,
-                              @Param("asc_desc") String asc_desc);
+    @Query(nativeQuery = true ,value = "select * from filtered_admin_gett(:ids)")
+    Page<Tiket> getAdminAll(Pageable pageable, @Param("ids") Long[] ids);
+
+    @Query(nativeQuery = true, value = "select * from tiketi where id in ?1")
+    List<Tiket> adminFindAllByIds(Set<Long> ids);
 }

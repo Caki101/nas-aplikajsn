@@ -8,7 +8,7 @@ let current_type;
 let keys;
 
 export async function initManagement(type) {
-    await generateTable(type,1, null);
+    await generateTable(type,1, null, null);
 
     document.querySelector("#previous-page")
         .addEventListener("click", () => changePage(false));
@@ -49,7 +49,7 @@ export async function initManagement(type) {
     bcf.addEventListener("change", e => generateTable(current_type, 1, e.target.value));
 }
 
-export async function generateTable(type,page,filter) {
+export async function generateTable(type,page,filter,search) {
     if (current_type !== type) created_page_numbers = false;
     current_type = type;
     switch (type) {
@@ -67,27 +67,35 @@ export async function generateTable(type,page,filter) {
             return;
     }
 
-    let url = "http://localhost:8080/api/admin/"+type+"?offset="+(page-1);
-    if (filter) url += "&filter="+filter;
+    let url = "http://localhost:8080/api/admin/"+type+"?page="+(page-1);
+    if (filter) url += "&sort="+filter;
+    if (search) url+= "&search="+search;
 
-    const table = await fetch(url, {
+    const res = await fetch(url, {
         headers: {
             "Api-Key-Header": API_KEY
         }
-    }).then((response) => response.json());
+    });
+    console.log(res);
 
-    if (!table) return;
+    const data = await res.json();
+    console.log(data)
+
+    const table = data.content;
+    console.log(table);
+
+    if (table.length === 0 || !table) console.error("Empty table");
+    else keys = Object.keys(table[0]);
 
     await makeTable(table);
 
     if(!created_page_numbers) {
         created_page_numbers = true;
-        makePageNums(type).finally();
+        makePageNums(data.totalElements).finally();
     }
 }
 
-async function makeTable(table) {
-    keys = Object.keys(table[0]);
+export async function makeTable(table) {
     const table_element = document.getElementById("table");
     table_element.innerHTML = "";
 
@@ -120,7 +128,10 @@ async function makeTable(table) {
             const col = document.createElement("td");
             col.classList.add("entity-attribute");
 
-            if (key === "smestaj") col.textContent = o[key].ime_smestaja;
+            if (key === "smestaj") {
+                col.textContent = o[key].ime_smestaja;
+                col.id = o[key].id;
+            }
             else col.textContent = o[key];
 
             col.classList.add(key);
@@ -132,20 +143,18 @@ async function makeTable(table) {
         tbody.appendChild(row.cloneNode(true));
     });
     table_element.insertBefore(tbody, null);
+
+    document.querySelectorAll("td").forEach(o => {
+        if (o.classList.contains("smestaj")) {
+            o.addEventListener("click", _ => generateOverlay("Smestaj", lalala(o,table)));
+        }
+    });
 }
 
-async function makePageNums(type) {
-    // temporary
-    const all = await fetch("http://localhost:8080/api/"+type, {
-        headers: {
-            "Api-Key-Header": API_KEY
-        }
-    }).then((response) => response.json());
-
-    const pages = all.length;
+async function makePageNums(total) {
     const pages_element = document.getElementById("pages");
 
-    for (let i = 0; i < pages/10; i++) {
+    for (let i = 0; i < total/10; i++) {
         const element = document.createElement("div");
         element.textContent = (i+1).toString();
         element.id = "page" + (i + 1);
@@ -166,10 +175,10 @@ export async function changePage(np) {
 
     document.getElementById("table").innerHTML = "";
 
-    let filter = document.querySelector(".active-filter");
-    if (filter !== null) filter = filter.innerText;
+    let filter = document.querySelector("#by-column-filter").value;
 
-    await generateTable(current_type, changed_page_num, filter==="smestaj"?"smestaj_id":key);
+    const search = document.querySelector("#search-filter").value;
+    await generateTable(current_type, changed_page_num, filter==="smestaj"?"smestaj_id":filter, search);
     active_page.classList.toggle("active-page");
     document.querySelector("#page"+changed_page_num).classList.toggle("active-page");
 }
@@ -213,7 +222,7 @@ function inputDivContent() {
 
     const save_btn = document.createElement("button");
     save_btn.textContent = "Save";
-    save_btn.classList.add("overlay-save-btn");
+    save_btn.classList.add("save-btn");
     save_btn.addEventListener("click", async _ => {
         console.log(current_type);
         //await fetch("http://localhost:8080/api/so"+);
@@ -281,7 +290,9 @@ function tableHelpOverlayContent() {
     const p = document.createElement("p");
     p.innerHTML = "Table shows all entities of selected table and allows admin to modify/delete entities." +
         "<br><br>" +
-        "<b>Order by:</b> Orders table by the given attribute.";
+        "<b>Order by:</b> Orders table by the given attribute." +
+        "<br><br>" +
+        "<b>Note:</b> For Tiketi table clicking on row's smestaj column opens overlay of more details about that Smestaj.";
 
     body_div.appendChild(p);
 
@@ -316,4 +327,24 @@ function modifyAndDeleteBtns(row) {
 
     row.appendChild(col_modify);
     row.appendChild(col_delete);
+}
+
+function lalala(o,table) {
+    const smestaj = table.filter(obj => obj.id === parseInt(o.parentElement.id.substring(2)))[0]["smestaj"];
+    let smestaj_to_string = "";
+    smestaj_to_string += "id: " + smestaj["id"] + "<br>";
+    smestaj_to_string += "ime_smestaja: " + smestaj["ime_smestaja"] + "<br>";
+    smestaj_to_string += "drzava: " + smestaj["drzava"] + "<br>";
+    smestaj_to_string += "grad: " + smestaj["grad"] + "<br>";
+    smestaj_to_string += "ocena: " + smestaj["ocena"];
+
+    const body_div = document.createElement("div");
+    body_div.className = "oc-body";
+
+    const p = document.createElement("p");
+    p.innerHTML = smestaj_to_string;
+
+    body_div.appendChild(p);
+
+    return body_div;
 }

@@ -1,0 +1,38 @@
+.stats-div {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.stat-card {
+    border: 1px solid lightgray;
+    padding: 5px;
+    margin: 10px;
+}
+
+.views-graph {
+    grid-row: span 2;
+    grid-column: span 2;
+}
+
+.top-smestajs, .top-tikets {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#tikets-graph, #smestajs-graph {
+    width: 200px;
+    height: 200px;
+}
+
+.latest-buys-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.latest-buys-table td, .latest-buys-table th {
+    border: 1px solid lightgray;
+    padding: 2px;
+}

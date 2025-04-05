@@ -1,7 +1,3 @@
-.cd {
-    padding: 1em;
-}
-
 .segment {
     margin: 1em;
     border: 1px solid lightgray;
@@ -54,7 +50,7 @@
     width: 100%;
 }
 
-.active-filter {
+.active-page {
     font-weight: bold;
 }
 
@@ -62,6 +58,7 @@
     background-color: aliceblue;
     justify-self: center;
     margin: 1em 0;
+    border-collapse: collapse;
 }
 
 .table-row {
@@ -89,7 +86,11 @@
     overflow: auto;
     white-space: nowrap;
     align-content: center;
-    padding-left: 0.5em;
+    padding: 0 0.5em;
+}
+
+td, th {
+    border: 1px solid gray;
 }
 
 #pages {
@@ -176,7 +177,7 @@
     margin-bottom: 0.5em;
 }
 
-.overlay-save-btn {
+.save-btn {
     align-self: center;
     width: 30%;
 }

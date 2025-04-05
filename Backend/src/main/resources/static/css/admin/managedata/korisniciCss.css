@@ -1,0 +1,22 @@
+.promote {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 40%;
+    justify-self: center;
+}
+
+.rs-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rs-label + .rs-label {
+    margin-top: 1em;
+}
+
+.rs-label:last-of-type {
+    margin-bottom: 1em;
+}

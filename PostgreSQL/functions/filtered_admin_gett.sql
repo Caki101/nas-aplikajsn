@@ -1,4 +1,4 @@
-create function filtered_admin_gett(limitt integer, offsett integer, filterr text, asc_desc text)
+create function filtered_admin_gett(ids bigint[])
     returns TABLE(id bigint, smestaj_id bigint, sezona text, cena double precision, trajanje_odmora integer, broj_osoba integer, broj_tiketa integer, prevoz text, polazak timestamp without time zone, version integer)
     language plpgsql
 as
@@ -6,15 +6,18 @@ $$
 declare
     query text;
 begin
-    filterr := 't.' || filterr;
+    query := format(
+            'select t.* from tiketi t inner join smestaj s on t.smestaj_id = s.id' ||
+            case
+                when array_length(ids, 1) is null then ''
+                else ' WHERE t.id = ANY($1)'
+                end
+             );
 
-    if filterr = 't.smestaj' then
-        filterr := 's.ime_smestaja';
+    if array_length(ids, 1) is null then
+        return query execute query;
+    else
+        return query execute query using ids;
     end if;
-
-    query := 'select t.* from tiketi t inner join smestaj s on t.smestaj_id = s.id order by ' ||
-             filterr || ' ' || asc_desc || ' limit ' || limitt || ' offset 10*' || offsett;
-
-    return query execute query;
 end
 $$;

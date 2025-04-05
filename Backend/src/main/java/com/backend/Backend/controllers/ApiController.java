@@ -11,9 +11,12 @@ import com.backend.Backend.services.MailgunService;
 import com.backend.Backend.security.JwtUtil;
 import com.backend.Backend.security.UserSecurity;
 import com.backend.Backend.systemFiling.StorageService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,7 +76,7 @@ public class ApiController {
             for(String word : words) {
                 for (char c : word.toCharArray()) {
                     root = root.getChildren().computeIfAbsent(c, _ -> new Trie());
-                    root.getTiket_ids().add(tiket.getId());
+                    root.getIds().add(tiket.getId());
                 }
                 root = search_trie;
             }
@@ -264,6 +267,7 @@ public class ApiController {
      * code 400 if user didn't verify identity in time;<br>
      * otherwise 200.
      */
+    @Operation(summary = "User sign up")
     @PostMapping("/userSignUp")
     @ResponseBody
     public ResponseEntity<?> userSignUp(@RequestBody User user) {
@@ -342,8 +346,16 @@ public class ApiController {
     // ***** SEARCH SUGGESTIONS ***** \\
     @GetMapping("/search")
     public ResponseEntity<?> search(@RequestParam String query) {
-        if (query.isEmpty()) return ResponseEntity.badRequest().body(Collections.emptyList());
+        if (query.isEmpty()) return null;
 
+        Set<Long> ids = returnSearchIds(query);
+
+        if (ids == null || ids.isEmpty()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(tiketiRepo.findAllByIds(ids));
+    }
+
+    private Set<Long> returnSearchIds(String query) {
         List<String> search_words = Arrays.stream(query.split(" ")).toList();
 
         Trie root;
@@ -355,17 +367,17 @@ public class ApiController {
 
             for (char c : word.toCharArray()) {
                 root = root.getChildren().get(c);
-                if (root == null) return ResponseEntity.notFound().build();
+                if (root == null) return ids;
             }
 
             if (ids.isEmpty()){
-                ids.addAll(root.getTiket_ids());
+                ids.addAll(root.getIds());
                 continue;
             }
-            ids = root.getTiket_ids().stream().filter(ids::contains).collect(Collectors.toCollection(HashSet::new));
+            ids = root.getIds().stream().filter(ids::contains).collect(Collectors.toCollection(HashSet::new));
         }
 
-        return ResponseEntity.ok(tiketiRepo.findAllByIds(ids));
+        return ids;
     }
 
     // ***** UPLOAD FILES ***** \\
@@ -416,16 +428,16 @@ public class ApiController {
     @PostMapping("/soBought")
     public ResponseEntity<?> saveBought(@RequestBody KupljeniTiketi kupljeni_tiket) {
         if (kupljeni_tiket == null) return ResponseEntity.badRequest().build();
-        if (kupljeni_tiket.getId_tiket() == null || kupljeni_tiket.getId_user() == null)
+        if (kupljeni_tiket.getTiket().getId() == null || kupljeni_tiket.getUser().getId() == null)
             return ResponseEntity.badRequest().build();
 
-        Optional<Tiket> tkt = tiketiRepo.findFirstById(kupljeni_tiket.getId_tiket());
+        Optional<Tiket> tkt = tiketiRepo.findFirstById(kupljeni_tiket.getTiket().getId());
         if (tkt.isPresent()) {
             if (tkt.get().getBroj_tiketa() == 0) return ResponseEntity.status(406).body("No more available tickets");
         }
         else return ResponseEntity.status(406).body("No such ticket exists");
 
-        tiketiRepo.buyTiket(kupljeni_tiket.getId_tiket());
+        tiketiRepo.buyTiket(kupljeni_tiket.getTiket().getId());
 
         return ResponseEntity.ok(kupljeniTiketiRepo.save(kupljeni_tiket));
     }
@@ -435,14 +447,14 @@ public class ApiController {
         List<Tiket> tiketi = new ArrayList<>();
 
         kupljeni_tiketi.forEach(tiket -> {
-            Optional<Tiket> tkt = tiketiRepo.findById(tiket.getId_tiket());
+            Optional<Tiket> tkt = tiketiRepo.findById(tiket.getTiket().getId());
             if (tkt.isPresent()) {
                 if (tkt.get().getBroj_tiketa() == 0) return;
             }
             else return;
 
-            tiketiRepo.buyTiket(tiket.getId_tiket());
-            tiketi.add(tiketiRepo.findById(tiket.getId_tiket()).orElse(new Tiket()));
+            tiketiRepo.buyTiket(tiket.getTiket().getId());
+            tiketi.add(tiketiRepo.findById(tiket.getTiket().getId()).orElse(new Tiket()));
             kupljeniTiketiRepo.save(tiket);
         });
 
@@ -478,7 +490,7 @@ public class ApiController {
     public ResponseEntity<?> adminLogin(@RequestBody User user, HttpServletRequest request) {
         User usr = usersRepo.findFirstByUsername(user.getUsername());
         if (usr == null) return ResponseEntity.notFound().build();
-        usr .setPassword(user.getPassword());
+        usr.setPassword(user.getPassword());
 
         ResponseEntity<?> response = userLogin(usr, request);
         if (response.getStatusCode().is4xxClientError()) return response;
@@ -489,23 +501,70 @@ public class ApiController {
     }
 
     @GetMapping("/admin/all{table}")
-    public ResponseEntity<?> adminAllS(@PathVariable(name = "table") String table,
-                                       @RequestParam(defaultValue = "0") Integer offset,
-                                       @RequestParam(defaultValue = "id") String filter,
-                                       @RequestParam(defaultValue = "asc") String asc_desc) {
-        List<?> return_array;
+    public ResponseEntity<?> adminAll(@PathVariable(name = "table") String table,
+                                      @RequestParam(defaultValue = "") String search,
+                                      @PageableDefault(sort = "id") Pageable pageable) {
         switch (table) {
             case "S":
-                return_array = smestajRepo.getAdminAll(10,offset,filter,asc_desc);
-                break;
+                return ResponseEntity.ok(smestajRepo.getAdminAll(pageable));
             case "U":
-                return_array = usersRepo.getAdminAll(10,offset,filter,asc_desc);
-                break;
+                return ResponseEntity.ok(usersRepo.getAdminAll(pageable));
             case "T":
-                return_array = tiketiRepo.getAdminAll(10,offset,filter,asc_desc);
-                break;
+                Long[] search_results = new Long[0];
+                if (!search.isEmpty()) {
+                    search_results = returnSearchIds(search).toArray(new Long[0]);
+                    if (search_results.length == 0) search_results = new Long[]{(long)-1};
+                }
+                return ResponseEntity.ok(tiketiRepo.getAdminAll(pageable,search_results));
+            case "KT":
+                return ResponseEntity.ok(kupljeniTiketiRepo.findAll(pageable));
             default:
                 return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/admin/top5tikets")
+    public ResponseEntity<?> adminTop5Tikets() {
+        List<List<Long>> count = new ArrayList<>();
+        List<List<?>> return_array = new ArrayList<>();
+
+        for (Object[] row : kupljeniTiketiRepo.top5Tikets())
+            count.add(List.of(((Number)row[0]).longValue(), ((Number)row[1]).longValue()));
+
+        Set<Long> ids = new HashSet<>();
+        count.forEach(l -> ids.add(l.getFirst()));
+
+        List<Tiket> tiketi = tiketiRepo.adminFindAllByIds(ids);
+
+        for (int i = 0; i < tiketi.size(); i++) {
+            return_array.add(List.of(tiketi.get(i),count.get(i).getLast()));
+        }
+
+        return ResponseEntity.ok(return_array);
+    }
+
+    @GetMapping("/admin/top5smestajs")
+    public ResponseEntity<?> adminTop5Smestajs() {
+        List<List<Long>> count = new ArrayList<>();
+        List<List<?>> return_array = new ArrayList<>();
+
+        for (Object[] row : smestajRepo.top5Smestajs())
+            count.add(List.of(((Number)row[0]).longValue(), ((Number)row[1]).longValue()));
+
+        Set<Long> ids = new HashSet<>();
+        count.forEach(l -> ids.add(l.getFirst()));
+
+        List<Smestaj> smestaji = smestajRepo.adminFindAllByIds(ids);
+
+        for (int i = 0; i < smestaji.size(); i++) {
+            Smestaj smestaj = new Smestaj();
+            for (Smestaj s : smestaji){
+                if (Objects.equals(s.getId(), count.get(i).getFirst())){
+                    smestaj = s;
+                    break;
+                }
+            }
+            return_array.add(List.of(smestaj,count.get(i).getLast()));
         }
 
         return ResponseEntity.ok(return_array);

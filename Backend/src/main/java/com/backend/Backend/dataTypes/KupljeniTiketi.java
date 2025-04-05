@@ -12,8 +12,14 @@ public class KupljeniTiketi {
     @SequenceGenerator(name = "kt_id_seq", sequenceName = "kt_id_seq", allocationSize = 1, initialValue = 0)
     private Long id;
 
-    private Long id_tiket;
-    private Long id_user;
+    @ManyToOne()
+    @JoinColumn(name = "id_tiket", referencedColumnName = "id")
+    private Tiket tiket;
+
+    @ManyToOne()
+    @JoinColumn(name = "id_user", referencedColumnName = "id")
+    private User user;
+
     private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
     public KupljeniTiketi() {
@@ -27,20 +33,20 @@ public class KupljeniTiketi {
         this.id = id;
     }
 
-    public Long getId_tiket() {
-        return id_tiket;
+    public Tiket getTiket() {
+        return tiket;
     }
 
-    public void setId_tiket(Long id_tiket) {
-        this.id_tiket = id_tiket;
+    public void setTiket(Tiket tiket) {
+        this.tiket = tiket;
     }
 
-    public Long getId_user() {
-        return id_user;
+    public User getUser() {
+        return user;
     }
 
-    public void setId_user(Long id_user) {
-        this.id_user = id_user;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Timestamp getTimestamp() {

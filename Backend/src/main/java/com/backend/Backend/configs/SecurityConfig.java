@@ -38,6 +38,8 @@ public class SecurityConfig {
                     authorizeRequests.requestMatchers("/testing/**").permitAll();
                     authorizeRequests.requestMatchers("/admin/**").permitAll();
                     authorizeRequests.requestMatchers("/js/**","/css/**").permitAll();
+                    authorizeRequests.requestMatchers("/swagger-ui.html","/swagger-ui/**","/v3/**").permitAll();
+
                     authorizeRequests.anyRequest().authenticated();
                 })
                 .csrf(AbstractHttpConfigurer::disable)

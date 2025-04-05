@@ -1,11 +1,38 @@
 <div th:fragment="content" class="cd">
   <h1>Korisnici tab</h1>
+  <div class="segment promotion-div">
+    <div class="top-of-div">
+      <h2 id="promotion-div-header">Promote to Admin</h2>
+      <button class="help-btn" id="promote-help">?</button>
+    </div>
+    <div class="promote">
+      <label for="user-input" class="rs-label">
+        User:
+        <input type="text" id="user-input" placeholder="Username..">
+      </label>
+      <label for="role-select" class="rs-label">
+        Role:
+        <select id="role-select">
+          <option value="admin">Admin</option>
+          <!-- <option value="user">Moderator</option> -->
+        </select>
+      </label>
+      <button type="submit" class="save-btn" id="promote-btn">Save</button>
+    </div>
+  </div>
   <div class="segment table-div">
-    <h2 id="table-div-header">Table</h2>
+    <div class="top-of-div">
+      <h2 id="table-div-header">Table</h2>
+      <button class="help-btn" id="table-help">?</button>
+    </div>
     <div id="filter-div">
       <label for="by-column-filter">
         Order by:
         <select id="by-column-filter"></select>
+      </label>
+      <label for="search-filter">
+        Search:
+        <input type="text" placeholder="Search.." id="search-filter">
       </label>
     </div>
     <table id="table"></table>
