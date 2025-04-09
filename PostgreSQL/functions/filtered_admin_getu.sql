@@ -6,7 +6,15 @@ $$
 declare
     query text;
 begin
-    query := 'select * from users order by ' || filterr || ' ' || asc_desc || ' limit ' || limitt || ' offset 10*' || offsett;
+    query := format(
+            'select * from users
+             order by %I %s
+             limit %s offset %s',
+            filterr,
+            asc_desc,
+            limitt,
+            10 * offsett
+             );
 
     return query execute query;
 end

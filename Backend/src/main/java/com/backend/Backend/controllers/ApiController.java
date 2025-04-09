@@ -20,6 +20,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -387,12 +388,16 @@ public class ApiController {
     // so - save one
     // sa - save all
 
-    @PostMapping("/soTiket")
+    @PostMapping("/soTiketi")
     public ResponseEntity<?> saveOneT(@RequestBody Tiket tiket) {
-        return ResponseEntity.ok(tiketiRepo.save(tiket));
+        Tiket saved_tiket = tiketiRepo.save(tiket);
+
+        return ResponseEntity.created(
+                URI.create("http://" + SecurityData.ORIGIN + "/api/tiket_" + saved_tiket.getId())
+        ).build();
     }
 
-    @PostMapping("/saTiket")
+    @PostMapping("/saTiketi")
     public ResponseEntity<?> saveAllT(@RequestBody List<TiketDTO> tiketi) {
         List<Tiket> tiketi_list = new ArrayList<>();
         tiketi.forEach(tiket -> {
@@ -415,12 +420,12 @@ public class ApiController {
         return ResponseEntity.ok(tiketiRepo.saveAll(tiketi_list));
     }
 
-    @PostMapping("/soSmestaj")
+    @PostMapping("/soSmestaji")
     public ResponseEntity<?> saveOneS(@RequestBody Smestaj smestaj) {
         return ResponseEntity.ok(smestajRepo.save(smestaj));
     }
 
-    @PostMapping("/saSmestaj")
+    @PostMapping("/saSmestaji")
     public ResponseEntity<?> saveAllS(@RequestBody List<Smestaj> smestaji) {
         return ResponseEntity.ok(smestajRepo.saveAll(smestaji));
     }
@@ -475,15 +480,13 @@ public class ApiController {
     }
 
     @PostMapping("/promote")
-    public ResponseEntity<?> promote(@RequestBody User user, HttpServletRequest request) {
-        ResponseEntity<?> response = userLogin(user, request);
-        if (response.getStatusCode().is4xxClientError()) return response;
-        user = usersRepo.findFirstByEmail(user.getEmail());
+    public ResponseEntity<?> promote(@RequestBody User user) {
+        user = usersRepo.findFirstByUsername(user.getUsername());
 
         boolean inserted = usersRepo.promote(user.getId());
         if (!inserted) return ResponseEntity.ok("User is already admin");
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Promoted");
     }
 
     @PostMapping("/admin_login")
@@ -568,5 +571,53 @@ public class ApiController {
         }
 
         return ResponseEntity.ok(return_array);
+    }
+
+    @DeleteMapping("/do-tiketi")
+    public ResponseEntity<?> doTiket(@RequestBody Tiket tiket) {
+        tiketiRepo.delete(tiket);
+
+        if (tiketiRepo.findById(tiket.getId()).isEmpty()) return ResponseEntity.noContent().build();
+        else return ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping("/do-smestaji")
+    public ResponseEntity<?> doSmestaj(@RequestBody Smestaj smestaj) {
+        smestajRepo.delete(smestaj);
+
+        if (smestajRepo.findById(smestaj.getId()).isEmpty()) return ResponseEntity.noContent().build();
+        else return ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping("/do-korisnici")
+    public ResponseEntity<?> doUser(@RequestBody User user) {
+        usersRepo.delete(user);
+
+        if (usersRepo.findById(user.getId()).isEmpty()) return ResponseEntity.noContent().build();
+        else return ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/uo-tiketi")
+    public ResponseEntity<?> uoTiketi(@RequestBody Tiket tiket) {
+        String last_object = tiketiRepo.findById(tiket.getId()).toString();
+
+        tiketiRepo.save(tiket);
+
+        if (!tiketiRepo.findById(tiket.getId()).toString().equals(last_object)) {
+            return ResponseEntity.noContent().build();
+        }
+        else return ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/uo-smestaji")
+    public ResponseEntity<?> uoSmestaji(@RequestBody Smestaj smestaj) {
+        String last_object = smestajRepo.findById(smestaj.getId()).toString();
+
+        smestajRepo.save(smestaj);
+
+        if (!smestajRepo.findById(smestaj.getId()).toString().equals(last_object)) {
+            return ResponseEntity.noContent().build();
+        }
+        else return ResponseEntity.badRequest().build();
     }
 }

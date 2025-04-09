@@ -83,7 +83,7 @@ async function tiketiGraph() {
     }
 
     new Chart(ctx, {
-        type: 'doughnut', // this is what makes it a donut chart
+        type: 'doughnut',
         data: {
             labels: labels_list,
             datasets: [{
@@ -95,10 +95,10 @@ async function tiketiGraph() {
         },
         options: {
             cutout: '70%',
-            responsive: true,
+            responsive: false,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'right'
                 }
             }
         }
@@ -125,7 +125,7 @@ async function smestajiGraph() {
     }
 
     new Chart(ctx, {
-        type: 'doughnut', // this is what makes it a donut chart
+        type: 'doughnut',
         data: {
             labels: labels_list,
             datasets: [{
@@ -136,11 +136,11 @@ async function smestajiGraph() {
             }]
         },
         options: {
-            cutout: '70%', // controls the size of the donut hole
-            responsive: true,
+            cutout: '70%',
+            responsive: false,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'right'
                 }
             }
         }

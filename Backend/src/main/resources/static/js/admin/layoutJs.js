@@ -12,9 +12,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.querySelectorAll(".page-link").forEach(
         mb => mb.addEventListener("click", (e) => {
-            //e.target.classList.toggle("active");
             let pathname = "/";
             if (e.target.id !== "dashboard") pathname = "/" + e.target.id;
+            if (e.target.id === "documentation") {
+                window.location.href="http://localhost:8080/swagger-ui.html";
+                return;
+            }
             window.location.href = "http://localhost:8080/admin" + pathname;
         })
     );

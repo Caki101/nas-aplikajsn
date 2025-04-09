@@ -154,6 +154,7 @@ td, th {
 .oc-body {
     display: flex;
     flex-direction: column;
+    padding: 0 1em 1em 1em;
 }
 
 .inputs-div {

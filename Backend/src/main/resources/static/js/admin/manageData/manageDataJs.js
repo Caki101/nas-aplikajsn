@@ -1,7 +1,4 @@
-import {API_KEY} from "../../config.js";
-
-// need to cache every page while it's on that table type
-// for table need to cache upon first entering smestaj choice menu all smestajs
+import { API_KEY } from "../../config.js";
 
 let created_page_numbers = false;
 let current_type;
@@ -31,6 +28,10 @@ export async function initManagement(type) {
             });
         document.querySelector("#create-help")
             .addEventListener("click", _ => generateOverlay("Help", createHelpOverlayContent()));
+    }
+    else {
+        document.querySelector("#promote-help")
+            .addEventListener("click", _ => generateOverlay("Help", promoteHelpOverlayContent()));
     }
     document.querySelector("#table-help")
         .addEventListener("click", _ => generateOverlay("Help", tableHelpOverlayContent()));
@@ -63,6 +64,7 @@ export async function generateTable(type,page,filter,search) {
             type = "allT";
             break;
         default:
+            // need error handling
             console.error("Unknown type");
             return;
     }
@@ -76,14 +78,11 @@ export async function generateTable(type,page,filter,search) {
             "Api-Key-Header": API_KEY
         }
     });
-    console.log(res);
 
     const data = await res.json();
-    console.log(data)
-
     const table = data.content;
-    console.log(table);
 
+    // need error handling
     if (table.length === 0 || !table) console.error("Empty table");
     else keys = Object.keys(table[0]);
 
@@ -102,27 +101,31 @@ export async function makeTable(table) {
     const thead = document.createElement("thead");
     const tbody = document.createElement("tbody");
 
-    const row = document.createElement("tr");
-    row.classList.add("table-row");
+    const rowh = document.createElement("tr");
+    rowh.classList.add("table-row");
 
     const colh = document.createElement("th");
     colh.classList.add("entity-attribute");
-    row.id = "table-headers";
+    rowh.id = "table-headers";
     for (const key of keys) {
         colh.textContent = key.charAt(0).toUpperCase() + key.slice(1).replace("_", " ");
-        row.append(colh.cloneNode(true));
+        rowh.append(colh.cloneNode(true));
     }
 
     colh.textContent = "Actions";
     colh.colSpan = 2;
-    row.append(colh.cloneNode(true));
+    rowh.append(colh.cloneNode(true));
 
-    thead.appendChild(row.cloneNode(true));
+    thead.appendChild(rowh);
     table_element.appendChild(thead);
+    table_element.appendChild(tbody);
 
     table.forEach(o => {
-        row.innerHTML = "";
+        const row = document.createElement("tr");
+        row.classList.add("table-row");
         row.id = "id" + o.id;
+
+        tbody.appendChild(row);
 
         for (const key of keys) {
             const col = document.createElement("td");
@@ -138,15 +141,12 @@ export async function makeTable(table) {
             row.append(col);
         }
 
-        modifyAndDeleteBtns(row);
-
-        tbody.appendChild(row.cloneNode(true));
+        modifyAndDeleteBtns(row, o);
     });
-    table_element.insertBefore(tbody, null);
 
     document.querySelectorAll("td").forEach(o => {
         if (o.classList.contains("smestaj")) {
-            o.addEventListener("click", _ => generateOverlay("Smestaj", lalala(o,table)));
+            o.addEventListener("click", _ => generateOverlay("Smestaj", showSmestajInfo(o,table)));
         }
     });
 }
@@ -217,33 +217,51 @@ function generateOverlay(header_name, content) {
 function inputDivContent() {
     const input_div = document.querySelector(".add-entity-div");
 
-    const inputs = makeInputs();
+    const inputs = makeInputs(false);
     input_div.appendChild(inputs);
 
     const save_btn = document.createElement("button");
     save_btn.textContent = "Save";
     save_btn.classList.add("save-btn");
     save_btn.addEventListener("click", async _ => {
-        console.log(current_type);
-        //await fetch("http://localhost:8080/api/so"+);
+        const obj = {};
+
+        for (const key of keys) {
+            if (key !== "id") obj[key] = document.querySelector("#"+key+"-input").value;
+        }
+
+        const res = await fetch("http://localhost:8080/api/so" + current_type[0].toUpperCase() + current_type.substring(1), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Api-Key-Header": API_KEY
+            },
+            body: JSON.stringify(obj)
+        });
+
+        if (res.status === 201) await regenerateTable();
     });
     input_div.appendChild(save_btn);
 }
 
-function makeInputs() {
+function makeInputs(overlay) {
     const inputs_div = document.createElement("div");
     inputs_div.className = "inputs-div";
+    const numeric = ["ocena","trajanje_odmora","broj_osoba","broj_tiketa","cena"];
 
     for(const key of keys) {
+        if (key === "id") continue;
         const label = document.createElement("label");
         label.className = "overlay-input-label"
         label.textContent = key + ":";
         label.htmlFor = key + "-input";
 
         const input = document.createElement("input");
-        input.id = key + "-input";
+        if (overlay) input.id = "overlay-" + key + "-input";
+        else input.id = key + "-input";
         input.className = "overlay-input";
         input.placeholder = key + "..";
+        if (numeric.find(n => n === key)) input.type = "number";
 
         label.appendChild(input);
         inputs_div.appendChild(label);
@@ -299,37 +317,46 @@ function tableHelpOverlayContent() {
     return body_div;
 }
 
-function modifyAndDeleteBtns(row) {
-    const col_modify = document.createElement("td");
-    col_modify.classList.add("entity-attribute");
-    col_modify.classList.add("entity-modify");
-    col_modify.textContent = "✎";
-    col_modify.addEventListener("click", async _ => {
-        // const response = await fetch("http://localhost:8080/api/");
-        //
-        // if (response.ok) {
-        //     console.log(response);
-        // }
-    });
+function modifyAndDeleteBtns(row, entity) {
+    if (current_type !== "korisnici") {
+        const col_modify = document.createElement("td");
+        col_modify.classList.add("entity-attribute");
+        col_modify.classList.add("entity-modify");
+        col_modify.textContent = "✎";
+
+        row.appendChild(col_modify);
+
+        col_modify.addEventListener("click", async _ => {
+            generateOverlay("Modify Entity #" + entity.id, modifyOverlayContent(entity));
+        });
+    }
 
     const col_delete = document.createElement("td");
     col_delete.classList.add("entity-attribute");
     col_delete.classList.add("entity-delete");
     col_delete.textContent = "🗑";
-    col_delete.addEventListener("click", async _ => {
-        // const response = await fetch("http://localhost:8080/api/");
-        //
-        // if (response.ok) {
-        //     console.log("Ok");
-        // }
-        // else console.log(response);
-    });
 
-    row.appendChild(col_modify);
     row.appendChild(col_delete);
+
+    col_delete.addEventListener("click", async _ => {
+        const confirmed = confirm("Are you sure you want to delete this?");
+
+        if (confirmed) {
+            const res = await fetch("http://localhost:8080/api/do-" + current_type, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Api-Key-Header": API_KEY
+                },
+                body: JSON.stringify(entity)
+            });
+
+            if (res.status === 200 || res.status === 204) await regenerateTable();
+        }
+    });
 }
 
-function lalala(o,table) {
+function showSmestajInfo(o,table) {
     const smestaj = table.filter(obj => obj.id === parseInt(o.parentElement.id.substring(2)))[0]["smestaj"];
     let smestaj_to_string = "";
     smestaj_to_string += "id: " + smestaj["id"] + "<br>";
@@ -347,4 +374,69 @@ function lalala(o,table) {
     body_div.appendChild(p);
 
     return body_div;
+}
+
+function modifyOverlayContent(entity) {
+    const body_div = document.createElement("div");
+    body_div.className = "oc-body";
+
+    body_div.appendChild(makeInputs(true));
+
+    for (const key of keys) {
+        if (key === "id") continue;
+        body_div.querySelector("#overlay-" + key + "-input").value = entity[key];
+    }
+
+    const save_button = document.createElement("button");
+    save_button.textContent = "Save";
+
+    body_div.appendChild(save_button);
+
+    save_button.addEventListener("click", async _ => {
+        const confirmed = confirm("Are you sure you want to update this?");
+
+        if (!confirmed) {return;}
+
+        for (const key of keys) {
+            if (key === "id") continue;
+            entity[key] = document.querySelector("#overlay-" + key + "-input").value;
+        }
+
+        const res = await fetch("http://localhost:8080/api/uo-" + current_type, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Api-Key-Header": API_KEY
+            },
+            body: JSON.stringify(entity)
+        });
+        if (res.status === 200 || res.status === 204) {
+            document.querySelector(".exit-btn").click();
+            await regenerateTable();
+        }
+    });
+
+    return body_div;
+}
+
+function promoteHelpOverlayContent() {
+    const body_div = document.createElement("div");
+    body_div.className = "oc-body";
+
+    const p = document.createElement("p");
+    p.innerHTML = "Input username of the user you wish to promote," +
+        "and then choose which level of promotion he should receive." +
+        "<br><br>" +
+        "<b>Admin:</b> Admin page access.";
+
+    body_div.appendChild(p);
+
+    return body_div;
+}
+
+async function regenerateTable() {
+    const page = document.querySelector(".active-page").textContent;
+    const filter = document.querySelector("#by-column-filter").value;
+    const search = document.querySelector("#search-filter").value;
+    await generateTable(current_type,parseInt(page),filter,search);
 }

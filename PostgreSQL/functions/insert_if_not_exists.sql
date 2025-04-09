@@ -11,12 +11,10 @@ begin
     )
     RETURNING * INTO result;
 
-    -- If the row was inserted, return the inserted row
     IF FOUND THEN
         RETURN result;
     END IF;
 
-    -- If the row already exists, select and return the existing row
     SELECT * INTO result
     FROM smestaj s
     WHERE s.ime_smestaja = ime_smestajaa AND s.grad = gradd

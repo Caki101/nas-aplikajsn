@@ -58,11 +58,18 @@ public class AdminPageController {
     @GetMapping("/manage_data/tiketi")
     public String manageDataTiketi(Model model) {
         model = addStatic(model);
+        model.addAttribute("page", "admin/manageData/tiketi");
         model.addAttribute("css", ORIGIN+"/css/admin/manageData/tiketiCss.css");
         model.addAttribute("js", ORIGIN+"/js/admin/manageData/tiketiJs.js");
-        model.addAttribute("page", "admin/manageData/tiketi");
         model.addAttribute("global_css", ORIGIN + "/css/admin/manageData/manageDataCss.css");
         model.addAttribute("global_methods", ORIGIN + "/js/admin/manageData/manageDataJs.js");
+        return "admin/layout";
+    }
+
+    @GetMapping("/logging")
+    public String loggingPage(Model model) {
+        model = addStatic(model);
+        model.addAttribute("page", "admin/logging");
         return "admin/layout";
     }
 }
