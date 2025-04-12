@@ -1,0 +1,140 @@
+.landing-div {
+    width: 100%;
+    height: 90vh;
+}
+
+/* overflow-centered-img-wrapper */
+.oci-wrapper {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* overflow-centered-img */
+.oc-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#landing-page-title {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    color: white;
+    font-size: 3.5em;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    border: 1px solid white;
+    padding: 1em;
+    backdrop-filter: blur(2px);
+    border-radius: 0.8em;
+    -webkit-text-stroke: 2px black;
+    box-shadow: 0 0 0.8em black;
+}
+
+.segment {
+}
+
+.segment-title-div {
+    background-color: #19262F;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3em 0;
+}
+
+.segment-title {
+}
+
+.segment-desc {
+}
+
+.segment-body {
+    margin: 2em 0;
+}
+
+.bo-cards{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.bos {
+    width: 90%;
+    /*height: 100%;*/
+    position: absolute;
+    display: grid;
+    grid-template-columns: 83% auto;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+}
+
+.bo-card {
+    width: 23vw;
+    height: 23vh;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    transition: transform 400ms ease;
+    border-radius: 1em;
+    box-shadow: 0 0 1.2em black;
+}
+
+.bo-card:hover {
+    transform: scale(1.1);
+}
+
+.bo-card + .bo-card {
+    margin-left: 3em;
+}
+
+.stats-div h3, .stats-div p {
+    margin: 0;
+}
+
+.line {
+    width: 100%;
+    border: 1px solid #E1B928;
+}
+
+.rating-div {
+    display: grid;
+    align-items: center;
+}
+
+.rating {
+    background-color: #E1B928;
+    border-radius: 1em;
+    padding: 0.2em;
+    margin: 0;
+}
+
+.about-us-div {
+    display: flex;
+    flex-direction: row;
+    color: black;
+    margin: 0 15em;
+    border: 1px solid black;
+    padding: 1.5em;
+    border-radius: 1em;
+    box-shadow: 0 0 10px black;
+    align-items: center;
+}
+
+.sb-text {
+    font-size: 1.05em;
+}
+
+#about-us-img {
+    border-radius: 1em;
+    width: max-content;
+    height: max-content;
+}

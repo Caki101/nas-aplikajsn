@@ -14,7 +14,6 @@ import com.backend.Backend.systemFiling.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.*;
@@ -151,17 +150,6 @@ public class ApiController {
         return tiket.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/image_{filename}")
-    @ResponseBody
-    public ResponseEntity<?> image(@PathVariable String filename) {
-        Resource img = storageService.load(filename);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-
-        return new ResponseEntity<>(img, headers, HttpStatus.OK);
-    }
-
     @PostMapping("/userLogin")
     public ResponseEntity<?> userLogin(@RequestBody User user_request,
                                        HttpServletRequest request) {
@@ -257,6 +245,16 @@ public class ApiController {
         });
 
         return ResponseEntity.ok(destinations);
+    }
+
+    @GetMapping("/best-offers")
+    public ResponseEntity<?> bestOffers() {
+        List<List<?>> return_array = new ArrayList<>();
+
+        for (Object[] row : tiketiRepo.bestOffers())
+            return_array.add(List.of((Long)row[0], (String)row[1], ((Number)row[2]).doubleValue(), ((Number)row[3]).doubleValue(), ((Number)row[4]).doubleValue()));
+
+        return ResponseEntity.ok(return_array);
     }
 
     // ***** SAVING ENTITIES *****\\

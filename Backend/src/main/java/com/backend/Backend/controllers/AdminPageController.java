@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminPageController {
     final String ORIGIN = "http://"+SecurityData.ORIGIN;
 
-    public Model addStatic(Model model) {
+    public void addStatic(Model model) {
         model.addAttribute("static_css",ORIGIN + "/css/admin/layoutCss.css");
         model.addAttribute("static_js",ORIGIN + "/js/admin/layoutJs.js");
-        return model;
     }
     
     @GetMapping("")
@@ -26,7 +25,7 @@ public class AdminPageController {
 
     @GetMapping("/")
     public String adminPage(Model model) {
-        model = addStatic(model);
+        addStatic(model);
         model.addAttribute("css", ORIGIN+"/css/admin/dashboardCss.css");
         model.addAttribute("js", ORIGIN+"/js/admin/dashboardJs.js");
         model.addAttribute("page", "admin/dashboard");
@@ -35,7 +34,7 @@ public class AdminPageController {
 
     @GetMapping("/manage_data/korisnici")
     public String manageDataKorisnici(Model model) {
-        model = addStatic(model);
+        addStatic(model);
         model.addAttribute("css", ORIGIN+"/css/admin/manageData/korisniciCss.css");
         model.addAttribute("js", ORIGIN+"/js/admin/manageData/korisniciJs.js");
         model.addAttribute("page", "admin/manageData/korisnici");
@@ -46,7 +45,7 @@ public class AdminPageController {
 
     @GetMapping("/manage_data/smestaji")
     public String manageDataSmestaji(Model model) {
-        model = addStatic(model);
+        addStatic(model);
         model.addAttribute("css", ORIGIN+"/css/admin/manageData/smestajiCss.css");
         model.addAttribute("js", ORIGIN+"/js/admin/manageData/smestajiJs.js");
         model.addAttribute("page", "admin/manageData/smestaji");
@@ -57,7 +56,7 @@ public class AdminPageController {
 
     @GetMapping("/manage_data/tiketi")
     public String manageDataTiketi(Model model) {
-        model = addStatic(model);
+        addStatic(model);
         model.addAttribute("page", "admin/manageData/tiketi");
         model.addAttribute("css", ORIGIN+"/css/admin/manageData/tiketiCss.css");
         model.addAttribute("js", ORIGIN+"/js/admin/manageData/tiketiJs.js");
@@ -68,7 +67,7 @@ public class AdminPageController {
 
     @GetMapping("/logging")
     public String loggingPage(Model model) {
-        model = addStatic(model);
+        addStatic(model);
         model.addAttribute("page", "admin/logging");
         return "admin/layout";
     }

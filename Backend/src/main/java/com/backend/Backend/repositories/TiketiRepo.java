@@ -51,4 +51,8 @@ public interface TiketiRepo extends CrudRepository<Tiket, Long> {
 
     @Query(nativeQuery = true, value = "select * from tiketi where id in ?1")
     List<Tiket> adminFindAllByIds(Set<Long> ids);
+
+    // s.id < 14 --- don't have images for others >13
+    @Query(nativeQuery = true, value = "select s.id, s.ime_smestaja, avg(t.cena), avg(trajanje_odmora), s.ocena from tiketi t join smestaj s on t.smestaj_id = s.id where s.id < 14 group by s.id, s.ocena order by s.ocena desc limit 3")
+    List<Object[]> bestOffers();
 }

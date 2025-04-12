@@ -37,7 +37,7 @@ public class PublicApiController {
         response.sendRedirect("/pages/message?message=" + message);
     }
 
-    @GetMapping("/first_image_{smestaj_id}")
+    @GetMapping("/first-image/{smestaj_id}")
     public ResponseEntity<?> firstImage(@PathVariable Long smestaj_id) {
         Resource img = storageService.loadFirst(smestaj_id);
 
@@ -49,5 +49,14 @@ public class PublicApiController {
         return new ResponseEntity<>(img, headers, HttpStatus.OK);
     }
 
+    @GetMapping("/image/{filename}")
+    @ResponseBody
+    public ResponseEntity<?> image(@PathVariable String filename) {
+        Resource img = storageService.load(filename);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+
+        return new ResponseEntity<>(img, headers, HttpStatus.OK);
+    }
 }

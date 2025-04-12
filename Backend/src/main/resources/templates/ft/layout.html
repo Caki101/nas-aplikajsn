@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Landing Page</title>
+
+    <link th:if="static_css" th:href="${static_css}" rel="stylesheet">
+    <script th:if="static_js" th:src="${static_js}"></script>
+
+    <link th:if="css" th:href="${css}" rel="stylesheet">
+    <script type="module" th:if="js" th:src="${js}"></script>
+</head>
+<body>
+    <div class="top-div-wrapper">
+        <div class="top-div">
+            <h1>Traveling Agency</h1>
+            <div class="nav-div">
+                <a class="nav-page home-nav" href="/ft/">Home</a>
+                <a class="nav-page destinations-nav" href="/ft/destinations">Destinations</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{${page} :: content}"></div>
+
+    <div class="footer-div-wrapper">
+        <div class="footer-div">
+            <div class="footer-nav-div">
+                <h3>Navigation</h3>
+                <div class="footer-nav">
+                    <a class="footer-nav-page home-nav" href="/ft/">Home</a>
+                    <a class="footer-nav-page destinations-nav" href="/ft/destinations">Destinations</a>
+                </div>
+            </div>
+            <div class="newsletter-div">
+                <h3>Newsletter</h3>
+                <div class="newsletter-form">
+                    <label for="newsletter-input">Subscribe to our newsletter</label>
+                    <input id="newsletter-input" type="text" placeholder="Enter your email address..">
+                </div>
+            </div>
+            <div class="socials-div">
+                <h3>Follow us</h3>
+                <div class="socials">
+                    <a th:if="facebook" th:href="${facebook}" class="socials-link">
+                        <img src="/public-api/image/facebook_icon.png" alt="fb">
+                    </a>
+                    <a th:if="instagram" th:href="${instagram}" class="socials-link">
+                        <img src="/public-api/image/instagram_icon.png" alt="ig">
+                    </a>
+                    <a th:if="x" th:href="${x}" class="socials-link">
+                        <img src="/public-api/image/x_icon.png" alt="x">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

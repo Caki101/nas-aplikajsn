@@ -39,6 +39,7 @@ public class SecurityConfig {
                     authorizeRequests.requestMatchers("/admin/**").permitAll();
                     authorizeRequests.requestMatchers("/js/**","/css/**").permitAll();
                     authorizeRequests.requestMatchers("/swagger-ui.html","/swagger-ui/**","/v3/**").permitAll();
+                    authorizeRequests.requestMatchers("/ft/**").permitAll();
 
                     authorizeRequests.anyRequest().authenticated();
                 })
