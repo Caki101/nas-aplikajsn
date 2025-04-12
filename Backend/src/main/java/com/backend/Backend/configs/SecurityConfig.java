@@ -1,5 +1,8 @@
-package com.backend.Backend.security;
+package com.backend.Backend.configs;
 
+import com.backend.Backend.security.ApiKeyAuthenticationFilter;
+import com.backend.Backend.security.JwtAuthenticationFilter;
+import com.backend.Backend.security.SecurityData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +28,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests -> {
-                    authorizeRequests.requestMatchers("/auth/**").hasRole(SecurityData.AUTH_USER);
-                    authorizeRequests.requestMatchers("/api/**").hasRole(SecurityData.API_USER);
+                    // disabled for testing purposes
+                    // needs to be reorganized
+                    //authorizeRequests.requestMatchers("/auth/**").hasAuthority(SecurityData.AUTH_USER);
+                    authorizeRequests.requestMatchers("/auth/**").permitAll();
+                    authorizeRequests.requestMatchers("/api/**").hasAuthority(SecurityData.API_USER);
+                    authorizeRequests.requestMatchers("/public-api/**").permitAll();
+                    authorizeRequests.requestMatchers("/pages/**").permitAll();
+                    authorizeRequests.requestMatchers("/testing/**").permitAll();
+                    authorizeRequests.requestMatchers("/admin/**").permitAll();
+                    authorizeRequests.requestMatchers("/js/**","/css/**").permitAll();
+                    authorizeRequests.requestMatchers("/swagger-ui.html","/swagger-ui/**","/v3/**").permitAll();
+                    authorizeRequests.requestMatchers("/ft/**").permitAll();
+
                     authorizeRequests.anyRequest().authenticated();
                 })
                 .csrf(AbstractHttpConfigurer::disable)

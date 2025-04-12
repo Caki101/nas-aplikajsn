@@ -1,0 +1,188 @@
+.segment {
+    margin: 1em;
+    border: 1px solid lightgray;
+    padding: 0.5em;
+}
+
+.create-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.top-of-div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.segment-header {
+    margin: 0;
+}
+
+.help-btn  {
+    border-radius: 50%;
+    width: 1.6em;
+    height: 1.6em;
+    padding: 0;
+    border: 1px solid gray;
+}
+
+.create-btns {}
+
+#input-btn {
+    font-size: 1.2em;
+    padding: 0.3em 1em;
+}
+
+.add-entity-div {
+    display: flex;
+    flex-direction: column;
+}
+
+.table-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#table-div-header {
+    width: 100%;
+}
+
+.active-page {
+    font-weight: bold;
+}
+
+#table {
+    background-color: aliceblue;
+    justify-self: center;
+    margin: 1em 0;
+    border-collapse: collapse;
+}
+
+.table-row {
+    height: 3em;
+}
+
+#table-headers {
+    font-weight: bold;
+}
+
+.table-row li {
+    border: 1px solid black;
+}
+
+.entity-modify, .entity-delete {
+    width: 2em;
+}
+
+.table-nav {
+    display: flex;
+    justify-self: center;
+}
+
+.entity-attribute {
+    overflow: auto;
+    white-space: nowrap;
+    align-content: center;
+    padding: 0 0.5em;
+}
+
+td, th {
+    border: 1px solid gray;
+}
+
+#pages {
+    display: flex;
+}
+
+#pages div + div, #pages div:first-of-type {
+    margin-left: 2em;
+}
+
+#pages div:last-of-type {
+    margin-right: 2em;
+}
+
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(76, 76, 76, 0.4);
+}
+
+.exit-btn {
+    border-radius: 50%;
+    width: 1.6em;
+    height: 1.6em;
+    padding: 0;
+    top: 1.1em;
+    position: relative;
+    border: 1px solid gray;
+}
+
+#exit-adding {
+    position: inherit;
+    align-self: flex-end;
+}
+
+.overlay-content {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    min-width: 15vw;
+    min-height: 15vh;
+    background-color: white;
+    padding: 0 1em;
+}
+
+.oc-header-div {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.oc-header {}
+
+.oc-body {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1em 1em 1em;
+}
+
+.inputs-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.overlay-input-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.overlay-input-label + .overlay-input-label {
+    margin-top: 0.5em;
+}
+
+.overlay-input-label:last-of-type {
+    margin-bottom: 0.5em;
+}
+
+.save-btn {
+    align-self: center;
+    width: 30%;
+}
+
+.hidden {
+    display: none;
+}

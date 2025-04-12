@@ -13,6 +13,7 @@ public class User {
     String email;
     String password;
     String username;
+    Boolean verified = false;
 
     public User() {
     }
@@ -47,5 +48,13 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
     }
 }

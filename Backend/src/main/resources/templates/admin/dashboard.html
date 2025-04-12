@@ -1,0 +1,57 @@
+<div th:fragment="content" class="cd">
+    <div class="header-help-div">
+
+    </div>
+    <div class="stats-div">
+        <div class="stat-card">
+            <div> New Users </div>
+        </div>
+        <div class="stat-card">
+            <div> Views </div>
+        </div>
+        <div class="stat-card">
+            <div> Bought Tikets </div>
+        </div>
+        <div class="stat-card">
+            <div> Earnings </div>
+        </div>
+        <div class="stat-card views-graph">
+            <div>graph</div>
+            <div class="graph-stats">
+                <div>
+                    Weekly Views
+                </div>
+                <div>
+                    Monthly Views
+                </div>
+            </div>
+        </div>
+        <div class="stat-card top-tikets">
+            <h3>Tiketi</h3>
+            <canvas id="tikets-graph"></canvas>
+
+        </div>
+        <div class="stat-card top-smestajs">
+            <h3>Smestaji</h3>
+            <canvas id="smestajs-graph"></canvas>
+
+        </div>
+    </div>
+    <div class="stat-card latest-buys-div">
+        <h2>Latest Buys</h2>
+        <table class="latest-buys-table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Tiket Id</th>
+                    <th>Smestaj</th>
+                    <th>Sezona</th>
+                    <th>Cena</th>
+                    <th>Korisnik</th>
+                    <th>Datum Kupovine</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

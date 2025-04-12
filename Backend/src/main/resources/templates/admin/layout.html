@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Layout</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link th:if="static_css" th:href="${static_css}" rel="stylesheet">
+    <script th:if="static_js" th:src="${static_js}"></script>
+
+    <link th:if="global_css" th:href="${global_css}" rel="stylesheet">
+    <script type="module" th:if="global_methods" th:src="${global_methods}"></script>
+
+    <link th:if="${css}" th:href="${css}" rel="stylesheet">
+    <script type="module" th:if="${js}" th:src="${js}"></script>
+</head>
+<body>
+    <div class="top-wrapper">
+        <div class="top-div">
+            <h1>Admin page</h1>
+            <button id="logout">Logout</button>
+        </div>
+    </div>
+    <div class="content-div">
+        <div class="side-menu">
+            <ul>
+                <li>
+                    <a id="dashboard" class="menu-button page-link">Dashboard</a>
+                </li>
+                <li>
+                    <div id="manage_data-menu">
+                        <a id="manage_data" class="menu-button menu-opener">Manage Data</a>
+                        <div>
+                            <a id="manage_data/korisnici" class="secondary-btn page-link">Korisnici</a>
+                            <a id="manage_data/smestaji" class="secondary-btn page-link">Smestaji</a>
+                            <a id="manage_data/tiketi" class="secondary-btn page-link">Tiketi</a>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <a id="logging" class="menu-button page-link">Logging</a>
+                </li>
+                <li>
+                    <a id="documentation" class="menu-button page-link">Documentation</a>
+                </li>
+            </ul>
+        </div>
+        <div th:replace="~{${page} :: content}" class="cd"></div>
+    </div>
+</body>
+</html>

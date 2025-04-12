@@ -40,3 +40,5 @@ out/
 src/main/resources/config.properties
 src/main/java/com/backend/Backend/systemFiling/FileSystemConfig.java
 src/main/java/com/backend/Backend/security/SecurityData.java
+upload_dir/*.png
+/src/main/resources/static/js/config.js

@@ -9,12 +9,32 @@ public class Smestaj {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "smestaj_id_seq")
     @SequenceGenerator(name = "smestaj_id_seq", sequenceName = "smestaj_id_seq", allocationSize = 1, initialValue = 0)
     private Long id;
+
     String ime_smestaja;
     String drzava;
     String grad;
-    Integer ocena;
+    Double ocena;
 
     public Smestaj() {
+    }
+
+    @Override
+    public String toString() {
+        return "Smestaj{" +
+                "id=" + id +
+                ", ime_smestaja='" + ime_smestaja + '\'' +
+                ", drzava='" + drzava + '\'' +
+                ", grad='" + grad + '\'' +
+                ", ocena=" + ocena +
+                '}';
+    }
+
+    public String searchable() {
+        return (id + " " +
+                ime_smestaja + " " +
+                drzava + " " +
+                grad + " " +
+                ocena).toLowerCase();
     }
 
     public Long getId() {
@@ -49,11 +69,11 @@ public class Smestaj {
         this.grad = grad;
     }
 
-    public Integer getOcena() {
+    public Double getOcena() {
         return ocena;
     }
 
-    public void setOcena(Integer ocena) {
+    public void setOcena(Double ocena) {
         this.ocena = ocena;
     }
 }

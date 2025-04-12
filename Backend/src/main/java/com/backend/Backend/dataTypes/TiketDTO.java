@@ -16,6 +16,9 @@ public class TiketDTO {
     private String prevoz;
     private Timestamp polazak;
 
+    public TiketDTO() {
+    }
+
     public Long getSmestaj_id() {
         return smestaj_id;
     }

@@ -8,15 +8,15 @@ import java.util.List;
 public interface StorageService {
     void init();
 
-    String store(MultipartFile file, int id);
+    String store(MultipartFile file, Long id);
 
     Resource load(String filename);
 
-    Resource loadFirst(Integer id);
+    Resource loadFirst(Long id);
 
-    List<String> getAllFilenames(Integer id);
+    List<String> getAllFilenames(Long id);
 
     void delete(String filename);
 
-    void deleteAll(Integer id);
+    void deleteAll(Long id);
 }

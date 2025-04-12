@@ -1,0 +1,36 @@
+body {
+    margin: 0;
+}
+
+.main {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding: 2em;
+    flex-direction: column;
+}
+
+input {
+    width: 100%;
+    margin-top: 1em;
+}
+
+label + label {
+    margin-top: 2em;
+}
