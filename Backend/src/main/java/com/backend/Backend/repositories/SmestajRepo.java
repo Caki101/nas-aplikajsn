@@ -30,4 +30,8 @@ public interface SmestajRepo extends CrudRepository<Smestaj, Long> {
 
     @Query(nativeQuery = true, value = "select * from smestaj where id in ?1")
     List<Smestaj> adminFindAllByIds(Set<Long> ids);
+
+    @Query(nativeQuery = true, value = "select s.drzava from smestaj s join tiketi t on s.id = t.smestaj_id " +
+            "where t.broj_tiketa > 0 group by s.drzava order by s.drzava")
+    List<String> getAvailableCountries();
 }

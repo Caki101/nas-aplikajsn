@@ -1,3 +1,17 @@
 <div th:fragment="content" class="content-div">
-  Destinations
+    <div class="landing-div"></div>
+
+    <div class="segment">
+        <div class="segment-title-div">
+            <h1 class="segment-title">COUNTRIES</h1>
+            <p class="segment-desc">Shown below are countries in which we have active available offers</p>
+        </div>
+        <div class="segment-body">
+            <div class="filter-div">
+                <label class="filter-label" for="filter-input">Country:</label>
+                <input type="text" placeholder="Search for a country..." id="filter-input">
+            </div>
+            <div class="cards-container"></div>
+        </div>
+    </div>
 </div>

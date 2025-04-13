@@ -18,18 +18,19 @@ async function init() {
     }
 
     const data = await res.json();
-    console.log(data);
 
     let cc = 1;
     for (const row of data) {
-        document.querySelector("#boc" + cc).style.backgroundImage = "url(/public-api/first-image/" + row[0] + ")";
+        const boc = document.querySelector("#boc" + cc);
+        boc.style.backgroundImage = "url(/public-api/first-image/" + row[0] + ")";
+
+        boc.href = "/ft/destination/" + row[0];
 
         document.querySelector("#bot" + cc).textContent = row[1];
 
-        document.querySelector("#bo-info" + cc).textContent = parseFloat(row[2]).toFixed(0) + "$ / " +
-            parseFloat(row[3]).toFixed(0) + " nights";
+        document.querySelector("#bo-info" + cc).textContent = parseFloat(row[2]).toFixed(0) + "$ / night";
 
-        document.querySelector("#bor" + cc).textContent = "★" + parseFloat(row[4]).toFixed(1);
+        document.querySelector("#bor" + cc).textContent = "★" + parseFloat(row[3]).toFixed(1);
 
         cc += 1;
     }

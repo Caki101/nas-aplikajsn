@@ -45,13 +45,16 @@ public class FrontendTemplateController {
         addStatic(model);
         model.addAttribute("page","ft/destinations");
 
+        model.addAttribute("css",ORIGIN + "/css/ft/destinationsCss.css");
+        model.addAttribute("js",ORIGIN + "/js/ft/destinationsJs.js");
+
         return "ft/layout";
     }
 
-    @GetMapping("/destination/{id}")
-    public String destination(@PathVariable String id, Model model) {
+    @GetMapping("/offers")
+    public String offers(Model model) {
         addStatic(model);
-        model.addAttribute("page","ft/tiketPage");
+        model.addAttribute("page","ft/offers");
 
         return "ft/layout";
     }

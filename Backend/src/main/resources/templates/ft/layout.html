@@ -11,18 +11,24 @@
     <script type="module" th:if="js" th:src="${js}"></script>
 </head>
 <body>
+    <!-- HEADER -->
     <div class="top-div-wrapper">
         <div class="top-div">
             <h1>Traveling Agency</h1>
             <div class="nav-div">
                 <a class="nav-page home-nav" href="/ft/">Home</a>
                 <a class="nav-page destinations-nav" href="/ft/destinations">Destinations</a>
+                <a class="nav-page offers-nav" href="/ft/offers">Offers</a>
+                <button>Login</button>
+                /
+                <button>Register</button>
             </div>
         </div>
     </div>
 
     <div th:replace="~{${page} :: content}"></div>
 
+    <!-- FOOTER -->
     <div class="footer-div-wrapper">
         <div class="footer-div">
             <div class="footer-nav-div">
@@ -30,6 +36,7 @@
                 <div class="footer-nav">
                     <a class="footer-nav-page home-nav" href="/ft/">Home</a>
                     <a class="footer-nav-page destinations-nav" href="/ft/destinations">Destinations</a>
+                    <a class="footer-nav-page offers-nav" href="/ft/offers">Offers</a>
                 </div>
             </div>
             <div class="newsletter-div">

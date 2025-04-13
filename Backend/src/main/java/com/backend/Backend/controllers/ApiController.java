@@ -252,9 +252,15 @@ public class ApiController {
         List<List<?>> return_array = new ArrayList<>();
 
         for (Object[] row : tiketiRepo.bestOffers())
-            return_array.add(List.of((Long)row[0], (String)row[1], ((Number)row[2]).doubleValue(), ((Number)row[3]).doubleValue(), ((Number)row[4]).doubleValue()));
+            return_array.add(List.of((Long)row[0], (String)row[1], ((Number)row[2]).doubleValue()/((Number)row[3]).doubleValue(), ((Number)row[4]).doubleValue()));
 
         return ResponseEntity.ok(return_array);
+    }
+
+    @GetMapping("/available-countries")
+    public ResponseEntity<?> availableCountries() {
+        List<String> countries = smestajRepo.getAvailableCountries();
+        return ResponseEntity.ok(countries);
     }
 
     // ***** SAVING ENTITIES *****\\

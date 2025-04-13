@@ -1,6 +1,6 @@
 .landing-div {
     width: 100%;
-    height: 90vh;
+    height: 93vh;
 }
 
 /* overflow-centered-img-wrapper */
@@ -68,13 +68,14 @@
 
 .bos {
     width: 90%;
-    /*height: 100%;*/
     position: absolute;
     display: grid;
     grid-template-columns: 83% auto;
     top: 90%;
     left: 50%;
     transform: translate(-50%, -100%);
+    background-color: rgba(0,0,0,0.4);
+    box-shadow: 0 0 8px black;
 }
 
 .bo-card {
@@ -85,7 +86,7 @@
     background-position: center center;
     transition: transform 400ms ease;
     border-radius: 1em;
-    box-shadow: 0 0 1.2em black;
+    box-shadow: 0 0 1em black;
 }
 
 .bo-card:hover {
